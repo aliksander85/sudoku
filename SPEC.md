@@ -487,7 +487,7 @@ Each task ends with `npm test`, `npm run lint`, `npm run build` passing. Mark a 
   Files: `src/lib/game/selectors.ts`, `src/lib/format.ts`, `src/lib/settings.ts`, `src/lib/stats.ts`, tests.
   Accept: flags correct for selected/peer/same-digit/conflict/wrong (wrong hidden in `off`); `getConflicts` returns the same array for the same `cells` ref; `remainingDigits` follows the *Number pad availability* rule in §3.7 in every mode; labels match the formats in §6.5; `formatTime(65_000) === '01:05'`, `formatTime(3_725_000) === '1:02:05'`; best/average time updated correctly.
 
-- [ ] **14. Stores.** Install `zustand`. Game, settings and stats stores with `persist` (keys/versions per §4.3); `startNewGame` calls an injectable generator; stats updated on status transitions.
+- [x] **14. Stores.** Install `zustand`. Game, settings and stats stores with `persist` (keys/versions per §4.3); `startNewGame` calls an injectable generator; stats updated on status transitions.
   Files: `src/store/*.ts`, `src/store/gameStore.test.ts`, `package.json`.
   Accept: (jsdom) state survives store re-creation from `localStorage`; wrong version or corrupted JSON → defaults; `won` game is not restored; `ready→playing` increments `played` once.
 
