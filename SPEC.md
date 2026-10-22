@@ -463,7 +463,7 @@ Each task ends with `npm test`, `npm run lint`, `npm run build` passing. Mark a 
   Files: `src/lib/game/createGame.ts`, `src/lib/game/reducer.ts`, `src/lib/game/reducer.test.ts`.
   Accept: `createGame` marks givens, status `ready`; moves wrap on all four edges; move with no selection selects 0; select ignored when paused.
 
-- [ ] **8. Input, notes, erase.** `input`, `note`, `erase` with peer note cleanup; first board change moves `ready → playing`.
+- [x] **8. Input, notes, erase.** `input`, `note`, `erase` with peer note cleanup; first board change moves `ready → playing`.
   Files: `src/lib/game/reducer.ts`, `src/lib/game/reducer.test.ts`.
   Accept: every input/note/erase rule in §3.7; placing a digit removes it from peers' notes; no-ops on givens/hinted cells; unchanged cells keep references.
 
