@@ -2,7 +2,9 @@ import { bit } from '../candidates.ts'
 import { PEERS } from '../grid.ts'
 import type { Cell, CellPatch, Digit, Direction, GameAction, GameState, HistoryStep } from '../types.ts'
 
-const isFrozen = (state: GameState): boolean =>
+const MISTAKE_LIMIT = 3
+
+const isFrozen =(state: GameState): boolean =>
   state.status === 'paused' || state.status === 'won' || state.status === 'lost'
 
 function moved(index: number, dir: Direction): number {
@@ -59,7 +61,18 @@ function inputDigit(state: GameState, digit: Digit): GameState {
     const { notes } = state.cells[peer]
     if (notes & bit(digit)) step.push(patch(state, peer, { notes: notes & ~bit(digit) }))
   }
-  return commit(state, step)
+  return judge(commit(state, step), i, digit)
+}
+
+function judge(state: GameState, index: number, digit: Digit): GameState {
+  const { solution } = state.puzzle
+  if (digit !== solution[index]) {
+    if (state.mistakeMode === 'off') return state
+    const mistakes = state.mistakes + 1
+    const lost = state.mistakeMode === 'limit' && mistakes >= MISTAKE_LIMIT
+    return { ...state, mistakes, status: lost ? 'lost' : state.status }
+  }
+  return state.cells.every((c, k) => c.value === solution[k]) ? { ...state, status: 'won' } : state
 }
 
 function erase(state: GameState): GameState {

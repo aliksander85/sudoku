@@ -209,3 +209,85 @@ describe('erase', () => {
     expect(reducer(sel(), { type: 'erase' }).status).toBe('ready')
   })
 })
+
+describe('mistakes and win/loss', () => {
+  const solution = puzzle.solution
+  const wrongDigit = (i: number): Digit => (solution[i] === 1 ? 2 : 1)
+  const correct = (i: number): Digit => solution[i] as Digit
+  const inMode = (mistakeMode: GameState['mistakeMode'], mistakes = 0): GameState => ({
+    ...sel(),
+    mistakeMode,
+    mistakes,
+  })
+  const almostSolved = (mistakeMode: GameState['mistakeMode']): GameState => {
+    const base = inMode(mistakeMode)
+    return {
+      ...base,
+      cells: base.cells.map((c, k) => (k === emptyIdx ? c : { ...c, value: solution[k] })),
+    }
+  }
+
+  it('does not count mistakes in off mode', () => {
+    const next = reducer(inMode('off'), { type: 'input', digit: wrongDigit(emptyIdx) })
+    expect(next.mistakes).toBe(0)
+    expect(next.status).toBe('playing')
+    expect(next.cells[emptyIdx].value).toBe(wrongDigit(emptyIdx))
+  })
+
+  it('counts each wrong placement in check mode and never loses', () => {
+    let s = reducer(inMode('check'), { type: 'input', digit: wrongDigit(emptyIdx) })
+    expect(s.mistakes).toBe(1)
+    s = reducer(s, { type: 'input', digit: correct(emptyIdx) })
+    expect(s.mistakes).toBe(1)
+    s = { ...s, mistakes: 2 }
+    s = reducer(s, { type: 'input', digit: wrongDigit(emptyIdx) })
+    s = reducer(s, { type: 'input', digit: wrongDigit(emptyIdx) === 2 ? 3 : 2 })
+    expect(s.mistakes).toBe(4)
+    expect(s.status).toBe('playing')
+  })
+
+  it('counts overwriting a wrong digit with another wrong digit', () => {
+    const w = wrongDigit(emptyIdx)
+    const other = ([1, 2, 3] as Digit[]).find((d) => d !== w && d !== correct(emptyIdx))!
+    let s = reducer(inMode('check'), { type: 'input', digit: w })
+    s = reducer(s, { type: 'input', digit: other })
+    expect(s.mistakes).toBe(2)
+  })
+
+  it('loses on the 3rd mistake in limit mode', () => {
+    const second = reducer(inMode('limit', 1), { type: 'input', digit: wrongDigit(emptyIdx) })
+    expect(second).toMatchObject({ mistakes: 2, status: 'playing' })
+    const third = reducer(inMode('limit', 2), { type: 'input', digit: wrongDigit(emptyIdx) })
+    expect(third).toMatchObject({ mistakes: 3, status: 'lost' })
+  })
+
+  it('keeps the count on mode change and checks the limit on the next mistake', () => {
+    const s = reducer({ ...inMode('check', 3), status: 'playing' }, { type: 'setMistakeMode', mode: 'limit' })
+    expect(s).toMatchObject({ mistakes: 3, status: 'playing' })
+    expect(reducer(s, { type: 'input', digit: wrongDigit(emptyIdx) }).status).toBe('lost')
+  })
+
+  it('wins on the last correct digit in every mode', () => {
+    for (const mode of ['off', 'check', 'limit'] as const) {
+      const next = reducer(almostSolved(mode), { type: 'input', digit: correct(emptyIdx) })
+      expect(next.status).toBe('won')
+    }
+  })
+
+  it('does not win on a wrong last digit', () => {
+    const next = reducer(almostSolved('check'), { type: 'input', digit: wrongDigit(emptyIdx) })
+    expect(next.status).toBe('playing')
+    expect(next.mistakes).toBe(1)
+  })
+
+  it('ignores board actions and navigation once won or lost', () => {
+    for (const status of ['won', 'lost'] as const) {
+      const s = { ...sel(), status }
+      expect(reducer(s, { type: 'input', digit: 3 })).toBe(s)
+      expect(reducer(s, { type: 'note', digit: 3 })).toBe(s)
+      expect(reducer(s, { type: 'erase' })).toBe(s)
+      expect(reducer(s, { type: 'select', index: 7 })).toBe(s)
+      expect(reducer(s, { type: 'move', dir: 'up' })).toBe(s)
+    }
+  })
+})

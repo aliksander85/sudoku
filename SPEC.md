@@ -467,7 +467,7 @@ Each task ends with `npm test`, `npm run lint`, `npm run build` passing. Mark a 
   Files: `src/lib/game/reducer.ts`, `src/lib/game/reducer.test.ts`.
   Accept: every input/note/erase rule in §3.7; placing a digit removes it from peers' notes; no-ops on givens/hinted cells; unchanged cells keep references.
 
-- [ ] **9. Mistakes and win/loss.** Mistake counting per mode, `lost` on the 3rd mistake in `limit`, `won` on the last correct digit, terminal statuses.
+- [x] **9. Mistakes and win/loss.** Mistake counting per mode, `lost` on the 3rd mistake in `limit`, `won` on the last correct digit, terminal statuses.
   Files: `src/lib/game/reducer.ts`, `src/lib/game/reducer.test.ts`.
   Accept: mistakes counted only in `check`/`limit`; changing mode mid-game keeps the count; 3rd mistake in limit → `lost`; last correct digit → `won`; all board actions ignored in `won`/`lost`.
 
