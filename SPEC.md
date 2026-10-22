@@ -443,7 +443,7 @@ Each task ends with `npm test`, `npm run lint`, `npm run build` passing. Mark a 
   Files: `src/lib/grid.ts`, `src/lib/grid.test.ts`.
   Accept: 27 units of 9; every `PEERS[i]` has 20 unique entries without `i`; peer relation is symmetric; parse/serialize round-trip; invalid length/characters throw.
 
-- [ ] **3. Seeded RNG.**
+- [x] **3. Seeded RNG.**
   Files: `src/lib/rng.ts`, `src/lib/rng.test.ts`.
   Accept: same seed → same first 10 values; values in [0, 1); `shuffle` returns a permutation and does not mutate its input; `randInt` stays in bounds over 10k draws.
 
