@@ -364,7 +364,7 @@ src/
 
 Each task ends with `npm test`, `npm run lint`, `npm run build` passing. Mark a task done by changing `[ ]` to `[x]`.
 
-- [ ] **1. Test setup.** Install `vitest`; add `test`/`test:watch` scripts; add a `test` block to `vite.config.ts` (`/// <reference types="vitest/config" />`, `include: ['src/**/*.test.{ts,tsx}']`); update CLAUDE.md "Commands".
+- [x] **1. Test setup.** Install `vitest`; add `test`/`test:watch` scripts; add a `test` block to `vite.config.ts` (`/// <reference types="vitest/config" />`, `include: ['src/**/*.test.{ts,tsx}']`); update CLAUDE.md "Commands".
   Files: `package.json`, `vite.config.ts`, `CLAUDE.md`, `src/lib/types.ts`, `src/lib/types.test.ts` (placeholder that imports types).
   Accept: `npm test` runs 1 passing test; build still type-checks.
 

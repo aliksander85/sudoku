@@ -14,8 +14,9 @@ See SPEC.md for requirements and the task list.
 - `npm run build` — type-check (`tsc -b`, project references) then production build to `dist/`
 - `npm run lint` — Oxlint (config in `.oxlintrc.json`: `react`, `typescript`, `oxc` plugins; `rules-of-hooks` is an error)
 - `npm run preview` — serve the production build
+- `npm test` — run the Vitest suite once (`vitest run`); `npm run test:watch` runs it in watch mode
 
-There is no test runner configured. If tests are added, Vitest fits the existing Vite setup; add a `test` script to `package.json` and update this section.
+Tests use Vitest, configured in the `test` block of `vite.config.ts`; test files are `src/**/*.test.{ts,tsx}` and import `describe/it/expect` from `vitest` explicitly (no globals). Component tests that need the DOM add `// @vitest-environment jsdom`.
 
 Type-checking only happens through `npm run build` (or `npx tsc -b`); `vite dev` does not type-check.
 
