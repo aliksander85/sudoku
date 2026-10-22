@@ -1,5 +1,6 @@
 import { bit, candidatesFor } from '../candidates.ts'
 import { PEERS } from '../grid.ts'
+import { createGame } from './createGame.ts'
 import { redoStep, undoStep } from './history.ts'
 import type { Cell, CellPatch, CellValue, Digit, Direction, GameAction, GameState, HistoryStep } from '../types.ts'
 
@@ -155,6 +156,23 @@ export function reducer(state: GameState, action: GameAction): GameState {
       return { ...state, notesMode: !state.notesMode }
     case 'setMistakeMode':
       return state.mistakeMode === action.mode ? state : { ...state, mistakeMode: action.mode }
+    case 'tick':
+      return state.status === 'playing' && Number.isFinite(action.deltaMs) && action.deltaMs > 0
+        ? { ...state, elapsedMs: state.elapsedMs + action.deltaMs }
+        : state
+    case 'pause': {
+      if (state.status === 'playing') return { ...state, status: 'paused', pausedBy: action.by }
+      if (state.status === 'paused' && action.by === 'user' && state.pausedBy !== 'user') {
+        return { ...state, pausedBy: 'user' }
+      }
+      return state
+    }
+    case 'resume':
+      if (state.status !== 'paused') return state
+      if (action.by === 'auto' && state.pausedBy !== 'auto') return state
+      return { ...state, status: 'playing', pausedBy: null }
+    case 'restart':
+      return createGame(state.puzzle, state.mistakeMode)
     default:
       return state
   }

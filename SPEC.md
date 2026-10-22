@@ -479,7 +479,7 @@ Each task ends with `npm test`, `npm run lint`, `npm run build` passing. Mark a 
   Files: `src/lib/game/reducer.ts`, tests.
   Accept: hint picks the selected empty/wrong cell, otherwise the cell chosen deterministically from `random`; hinted cells are locked; hint clears peers' notes; auto-candidates fills correct masks, is one undo step and counts as a hint; undo does not decrement `hintsUsed`.
 
-- [ ] **12. Pause/resume, tick, restart.**
+- [x] **12. Pause/resume, tick, restart.**
   Files: `src/lib/game/reducer.ts`, tests.
   Accept: tick only adds while `playing`; auto-resume does not undo a user pause; actions ignored while paused; restart resets to givens with zero timer/mistakes/hints/history and status `ready`.
 

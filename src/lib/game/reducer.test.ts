@@ -411,3 +411,105 @@ describe('autoCandidates', () => {
     }
   })
 })
+
+const playing = (): GameState => reducer(sel(), { type: 'input', digit: solutionAt(emptyIdx) })
+
+describe('tick', () => {
+  it('adds time only while playing', () => {
+    const p = playing()
+    expect(p.status).toBe('playing')
+    expect(reducer(p, { type: 'tick', deltaMs: 250 }).elapsedMs).toBe(250)
+    for (const status of ['ready', 'paused', 'won', 'lost'] as const) {
+      const s = { ...p, status }
+      expect(reducer(s, { type: 'tick', deltaMs: 250 })).toBe(s)
+    }
+  })
+
+  it('ignores zero, negative and non-finite deltas', () => {
+    const p = playing()
+    for (const deltaMs of [0, -5, NaN, Infinity]) {
+      expect(reducer(p, { type: 'tick', deltaMs })).toBe(p)
+    }
+  })
+})
+
+describe('pause / resume', () => {
+  it('pauses and resumes from playing', () => {
+    const paused = reducer(playing(), { type: 'pause', by: 'user' })
+    expect(paused).toMatchObject({ status: 'paused', pausedBy: 'user' })
+    expect(reducer(paused, { type: 'resume', by: 'user' })).toMatchObject({
+      status: 'playing',
+      pausedBy: null,
+    })
+  })
+
+  it('ignores pause outside playing and resume outside paused', () => {
+    const p = playing()
+    for (const status of ['ready', 'won', 'lost'] as const) {
+      const s = { ...p, status }
+      expect(reducer(s, { type: 'pause', by: 'user' })).toBe(s)
+    }
+    expect(reducer(p, { type: 'resume', by: 'user' })).toBe(p)
+  })
+
+  it('auto resume undoes an auto pause', () => {
+    const paused = reducer(playing(), { type: 'pause', by: 'auto' })
+    expect(reducer(paused, { type: 'resume', by: 'auto' }).status).toBe('playing')
+  })
+
+  it('auto resume does not undo a user pause', () => {
+    const paused = reducer(playing(), { type: 'pause', by: 'user' })
+    expect(reducer(paused, { type: 'resume', by: 'auto' })).toBe(paused)
+  })
+
+  it('auto pause does not override a user pause; user pause upgrades an auto pause', () => {
+    const user = reducer(playing(), { type: 'pause', by: 'user' })
+    expect(reducer(user, { type: 'pause', by: 'auto' })).toBe(user)
+    const auto = reducer(playing(), { type: 'pause', by: 'auto' })
+    const upgraded = reducer(auto, { type: 'pause', by: 'user' })
+    expect(upgraded.pausedBy).toBe('user')
+    expect(reducer(upgraded, { type: 'resume', by: 'auto' })).toBe(upgraded)
+  })
+
+  it('ignores board actions, undo/redo, select and move while paused', () => {
+    const paused = reducer(playing(), { type: 'pause', by: 'user' })
+    const target = emptyIdxs.find((k) => k !== emptyIdx)!
+    const s = { ...paused, selected: target }
+    const actions = [
+      { type: 'input', digit: 1 },
+      { type: 'note', digit: 1 },
+      { type: 'erase' },
+      { type: 'hint', random: 0 },
+      { type: 'autoCandidates' },
+      { type: 'undo' },
+      { type: 'redo' },
+      { type: 'select', index: 0 },
+      { type: 'move', dir: 'right' },
+    ] as const
+    for (const a of actions) expect(reducer(s, a)).toBe(s)
+  })
+})
+
+describe('restart', () => {
+  it('resets to givens with zero timer, mistakes, hints and history', () => {
+    const dirty: GameState = {
+      ...playing(),
+      mistakeMode: 'limit',
+      mistakes: 2,
+      hintsUsed: 3,
+      elapsedMs: 9000,
+      notesMode: true,
+      selected: 5,
+    }
+    const restarted = reducer(dirty, { type: 'restart' })
+    expect(restarted).toEqual(createGame(puzzle, 'limit'))
+    expect(restarted.status).toBe('ready')
+  })
+
+  it('works from paused, won and lost', () => {
+    for (const status of ['paused', 'won', 'lost'] as const) {
+      const s = { ...playing(), status, pausedBy: status === 'paused' ? ('user' as const) : null }
+      expect(reducer(s, { type: 'restart' })).toEqual(createGame(puzzle, 'check'))
+    }
+  })
+})
