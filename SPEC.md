@@ -459,7 +459,7 @@ Each task ends with `npm test`, `npm run lint`, `npm run build` passing. Mark a 
   Files: `src/lib/generator.ts`, `src/lib/generator.test.ts`.
   Accept: generator property tests from §8.3 pass for the fixed seed list; the generator test file finishes < 20 s.
 
-- [ ] **7. Game creation, selection, movement.** `createGame`, reducer skeleton with `select`, `move`, `toggleNotesMode`, `setMistakeMode`.
+- [x] **7. Game creation, selection, movement.** `createGame`, reducer skeleton with `select`, `move`, `toggleNotesMode`, `setMistakeMode`.
   Files: `src/lib/game/createGame.ts`, `src/lib/game/reducer.ts`, `src/lib/game/reducer.test.ts`.
   Accept: `createGame` marks givens, status `ready`; moves wrap on all four edges; move with no selection selects 0; select ignored when paused.
 
