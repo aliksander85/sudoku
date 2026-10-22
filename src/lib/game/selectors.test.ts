@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { EASY } from '../__fixtures__/puzzles.ts'
 import { parseGrid } from '../grid.ts'
 import { createGame } from './createGame.ts'
-import { cellFlags, cellLabel, getConflicts, remainingDigits } from './selectors.ts'
+import { CELL_FLAG, cellFlags, cellLabel, getConflicts, remainingDigits } from './selectors.ts'
 import type { Cell, GameState, MistakeMode } from '../types.ts'
 
 const puzzle = {
@@ -35,36 +35,44 @@ describe('getConflicts', () => {
   })
 })
 
+const has = (state: GameState, index: number, flag: keyof typeof CELL_FLAG) =>
+  (cellFlags(state, index) & CELL_FLAG[flag]) !== 0
+
 describe('cellFlags', () => {
+  it('returns a number so store selectors stay referentially stable', () => {
+    expect(typeof cellFlags({ ...game(), selected: 0 }, 1)).toBe('number')
+    expect(cellFlags(game(), 1)).toBe(0)
+  })
+
   it('flags selected, peer and same digit', () => {
     const g = { ...game(), selected: 0 }
-    expect(cellFlags(g, 0)).toMatchObject({ selected: true, peer: false, sameDigit: false })
-    expect(cellFlags(g, 1).peer).toBe(true)
-    expect(cellFlags(g, 40).peer).toBe(false)
+    expect(cellFlags(g, 0)).toBe(CELL_FLAG.selected)
+    expect(has(g, 1, 'peer')).toBe(true)
+    expect(has(g, 40, 'peer')).toBe(false)
     // the other given 5 not in a peer position of index 0
     const fives = g.cells.flatMap((c, i) => (c.value === 5 && i !== 0 ? [i] : []))
     expect(fives.length).toBeGreaterThan(0)
-    expect(cellFlags(g, fives[0]).sameDigit).toBe(true)
+    expect(has(g, fives[0], 'sameDigit')).toBe(true)
   })
 
   it('has no peer/sameDigit without selection or on an empty selected cell', () => {
-    expect(cellFlags(game(), 1)).toMatchObject({ peer: false, sameDigit: false })
+    expect(cellFlags(game(), 1)).toBe(0)
     const g = { ...game(), selected: 2 }
-    expect(cellFlags(g, 3).sameDigit).toBe(false)
+    expect(has(g, 3, 'sameDigit')).toBe(false)
   })
 
   it('marks wrong user digits in check/limit but not off, never givens/hinted', () => {
     const patch = { 2: { value: 9 as const } }
-    expect(cellFlags(game('check', patch), 2).wrong).toBe(true)
-    expect(cellFlags(game('limit', patch), 2).wrong).toBe(true)
-    expect(cellFlags(game('off', patch), 2).wrong).toBe(false)
-    expect(cellFlags(game('check', { 2: { value: 9, hinted: true } }), 2).wrong).toBe(false)
-    expect(cellFlags(game(), 0).wrong).toBe(false)
-    expect(cellFlags(game('check', { 2: { value: 4 } }), 2).wrong).toBe(false)
+    expect(has(game('check', patch), 2, 'wrong')).toBe(true)
+    expect(has(game('limit', patch), 2, 'wrong')).toBe(true)
+    expect(has(game('off', patch), 2, 'wrong')).toBe(false)
+    expect(has(game('check', { 2: { value: 9, hinted: true } }), 2, 'wrong')).toBe(false)
+    expect(has(game(), 0, 'wrong')).toBe(false)
+    expect(has(game('check', { 2: { value: 4 } }), 2, 'wrong')).toBe(false)
   })
 
   it('marks conflict independent of mistake mode', () => {
-    expect(cellFlags(game('off', { 2: { value: 5 } }), 2).conflict).toBe(true)
+    expect(has(game('off', { 2: { value: 5 } }), 2, 'conflict')).toBe(true)
   })
 })
 

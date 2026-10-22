@@ -3,13 +3,14 @@ import { PEERS, colOf, rowOf } from '../grid.ts'
 import { findConflicts } from '../rules.ts'
 import type { Cell, GameState } from '../types.ts'
 
-export interface CellFlags {
-  selected: boolean
-  peer: boolean
-  sameDigit: boolean
-  conflict: boolean
-  wrong: boolean
-}
+// Bit-flags keep the per-cell store selector a primitive, so unchanged cells skip re-rendering
+export const CELL_FLAG = {
+  selected: 1,
+  peer: 2,
+  sameDigit: 4,
+  conflict: 8,
+  wrong: 16,
+} as const
 
 let lastCells: readonly Cell[] | null = null
 let lastConflicts: boolean[] = []
@@ -37,18 +38,20 @@ export function cellFlags(
   state: GameState,
   index: number,
   conflicts: readonly boolean[] = getConflicts(state.cells),
-): CellFlags {
+): number {
   const { selected, cells } = state
   const isSelected = selected === index
   const hasOther = selected !== null && !isSelected
   const selectedValue = selected === null ? 0 : cells[selected].value
-  return {
-    selected: isSelected,
-    peer: hasOther && PEERS[selected].includes(index),
-    sameDigit: hasOther && selectedValue !== 0 && cells[index].value === selectedValue,
-    conflict: conflicts[index],
-    wrong: isWrong(state, index),
+  let flags = 0
+  if (isSelected) flags |= CELL_FLAG.selected
+  if (hasOther && PEERS[selected].includes(index)) flags |= CELL_FLAG.peer
+  if (hasOther && selectedValue !== 0 && cells[index].value === selectedValue) {
+    flags |= CELL_FLAG.sameDigit
   }
+  if (conflicts[index]) flags |= CELL_FLAG.conflict
+  if (isWrong(state, index)) flags |= CELL_FLAG.wrong
+  return flags
 }
 
 // remaining[d] = how many more copies of digit d can still be placed (index 0 unused)

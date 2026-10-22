@@ -503,7 +503,7 @@ Each task ends with `npm test`, `npm run lint`, `npm run build` passing. Mark a 
   Files: `src/components/Board/*`, `src/components/Board/Board.test.tsx`, `src/App.tsx`, `package.json`.
   Accept: test — clicking a cell sets `aria-selected` and its label matches the spec; notes render as a 3×3 mini-grid.
 
-- [ ] **18. Cell visual states and render performance.** Selected/peer/same-digit/conflict/wrong/given/hinted styles per §6.2 priority; narrow store subscriptions.
+- [x] **18. Cell visual states and render performance.** Selected/peer/same-digit/conflict/wrong/given/hinted styles per §6.2 priority; narrow store subscriptions.
   Files: `src/components/Board/*`.
   Accept: manual — highlights match §6.2 priority in both themes; React DevTools "highlight updates" shows only affected cells re-render on input.
 

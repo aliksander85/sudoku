@@ -16,13 +16,48 @@
   outline-offset: -2px;
 }
 
-.cell[aria-selected='true'] {
+/* Background priority (low → high): peer, same digit, conflict, selected */
+.cell[data-peer='true'] {
+  background: var(--peer);
+}
+
+.cell[data-same-digit='true'] {
+  background: var(--same-digit);
+}
+
+.cell[data-conflict='true'] {
+  background: var(--conflict);
+}
+
+.cell[data-selected='true'] {
   background: var(--selected);
 }
 
 .value {
   font-size: 5.5cqi;
   line-height: 1;
+}
+
+.value[data-kind='given'] {
+  color: var(--given);
+}
+
+.value[data-kind='entered'] {
+  color: var(--entered);
+}
+
+.value[data-kind='hinted'] {
+  color: var(--hinted);
+  text-decoration: underline dotted;
+}
+
+.cell[data-conflict='true'] .value {
+  color: var(--wrong);
+}
+
+.cell[data-wrong='true'] .value {
+  color: var(--wrong);
+  text-decoration: underline solid;
 }
 
 .notes {

@@ -1,12 +1,14 @@
 // @vitest-environment jsdom
-import { cleanup, render, screen, within } from '@testing-library/react'
+import { act, cleanup, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { Profiler } from 'react'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { EASY } from '../../lib/__fixtures__/puzzles.ts'
 import { createGame } from '../../lib/game/createGame.ts'
 import { parseGrid } from '../../lib/grid.ts'
 import { useGameStore } from '../../store/index.ts'
 import Board from './Board.tsx'
+import Cell from './Cell.tsx'
 
 const puzzle = {
   id: 'easy-1',
@@ -69,5 +71,62 @@ describe('Board', () => {
     const slots = within(cell).getByTestId('notes').children
     expect(slots).toHaveLength(9)
     expect(Array.from(slots, (s) => s.textContent)).toEqual(['1', '', '', '4', '', '', '', '', '9'])
+  })
+})
+
+describe('Cell visual states', () => {
+  const flagged = (attr: string) =>
+    screen.getAllByRole('gridcell').filter((c) => c.getAttribute(attr) === 'true')
+
+  it('marks selected, peers and same digits', async () => {
+    render(<Board />)
+    const given = puzzle.givens.findIndex((v) => v !== 0)
+    await userEvent.click(cellAt(given))
+    expect(flagged('data-selected')).toEqual([cellAt(given)])
+    expect(flagged('data-peer').length).toBeGreaterThan(0)
+    expect(flagged('data-peer')).not.toContain(cellAt(given))
+    expect(flagged('data-same-digit').length).toBeGreaterThan(0)
+  })
+
+  it('marks conflicts on both cells and wrong digits', () => {
+    const game = createGame(puzzle, 'check')
+    const given = puzzle.givens.findIndex((v) => v !== 0)
+    game.cells[emptyIndex] = { ...game.cells[emptyIndex], value: puzzle.givens[given] }
+    useGameStore.setState({ game })
+    render(<Board />)
+    expect(cellAt(emptyIndex).getAttribute('data-wrong')).toBe('true')
+    expect(cellAt(emptyIndex).getAttribute('data-conflict')).toBe('true')
+    expect(flagged('data-conflict').length).toBeGreaterThanOrEqual(2)
+  })
+
+  it('tags given and hinted values', () => {
+    const game = createGame(puzzle, 'check')
+    game.cells[emptyIndex] = { ...game.cells[emptyIndex], value: puzzle.solution[emptyIndex], hinted: true }
+    useGameStore.setState({ game })
+    render(<Board />)
+    const kind = (i: number) => cellAt(i).querySelector('[data-kind]')?.getAttribute('data-kind')
+    expect(kind(emptyIndex)).toBe('hinted')
+    expect(kind(puzzle.givens.findIndex((v) => v !== 0))).toBe('given')
+  })
+
+  it('re-renders only cells whose flags change when selection moves', () => {
+    const renders = new Map<number, number>()
+    render(
+      <>
+        {Array.from({ length: 81 }, (_, i) => (
+          <Profiler key={i} id={String(i)} onRender={() => renders.set(i, (renders.get(i) ?? 0) + 1)}>
+            <Cell index={i} />
+          </Profiler>
+        ))}
+      </>,
+    )
+    renders.clear()
+    // only cells whose peer / same-digit / selected state differs should re-render
+    act(() => useGameStore.getState().dispatch({ type: 'select', index: 40 }))
+    act(() => useGameStore.getState().dispatch({ type: 'select', index: 41 }))
+    const total = [...renders.values()].reduce((a, b) => a + b, 0)
+    expect(total).toBeLessThan(81)
+    const untouched = Array.from({ length: 81 }, (_, i) => i).filter((i) => !renders.has(i))
+    expect(untouched.length).toBeGreaterThan(40)
   })
 })
