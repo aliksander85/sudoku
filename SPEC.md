@@ -507,7 +507,7 @@ Each task ends with `npm test`, `npm run lint`, `npm run build` passing. Mark a 
   Files: `src/components/Board/*`.
   Accept: manual — highlights match §6.2 priority in both themes; React DevTools "highlight updates" shows only affected cells re-render on input.
 
-- [ ] **19. Number pad and toolbar.**
+- [x] **19. Number pad and toolbar.**
   Files: `src/components/NumberPad/*`, `src/components/Toolbar/*`, tests, `src/App.tsx`.
   Accept: test — select cell, click pad `5` → cell shows 5; notes toggle changes pad behavior; undo button restores; pad digit disabled per the *Number pad availability* rule in §3.7.
 

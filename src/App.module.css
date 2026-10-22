@@ -42,14 +42,6 @@
   min-width: 0;
 }
 
-.toolbar,
-.pad {
-  min-height: 44px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-}
-
 @media (min-width: 900px) and (orientation: landscape) {
   .app {
     display: grid;

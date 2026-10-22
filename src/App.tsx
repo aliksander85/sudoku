@@ -1,5 +1,7 @@
 import { useEffect } from 'react'
 import Board from './components/Board/Board.tsx'
+import NumberPad from './components/NumberPad/NumberPad.tsx'
+import Toolbar from './components/Toolbar/Toolbar.tsx'
 import { useTheme } from './hooks/useTheme.ts'
 import { useGameStore } from './store/index.ts'
 import styles from './App.module.css'
@@ -24,8 +26,8 @@ function App() {
         <div className={styles.board}>{hasGame && <Board />}</div>
       </main>
       <div className={styles.controls}>
-        <div className={styles.toolbar} />
-        <div className={styles.pad} />
+        {hasGame && <Toolbar />}
+        {hasGame && <NumberPad />}
       </div>
     </div>
   )
