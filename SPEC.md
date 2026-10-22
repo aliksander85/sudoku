@@ -483,7 +483,7 @@ Each task ends with `npm test`, `npm run lint`, `npm run build` passing. Mark a 
   Files: `src/lib/game/reducer.ts`, tests.
   Accept: tick only adds while `playing`; auto-resume does not undo a user pause; actions ignored while paused; restart resets to givens with zero timer/mistakes/hints/history and status `ready`.
 
-- [ ] **13. Selectors, format, settings, stats.** `cellFlags`, memoized `getConflicts`, `remainingDigits`, `cellLabel`, `formatTime`, `DEFAULT_SETTINGS`, `recordStart/recordWin`.
+- [x] **13. Selectors, format, settings, stats.** `cellFlags`, memoized `getConflicts`, `remainingDigits`, `cellLabel`, `formatTime`, `DEFAULT_SETTINGS`, `recordStart/recordWin`.
   Files: `src/lib/game/selectors.ts`, `src/lib/format.ts`, `src/lib/settings.ts`, `src/lib/stats.ts`, tests.
   Accept: flags correct for selected/peer/same-digit/conflict/wrong (wrong hidden in `off`); `getConflicts` returns the same array for the same `cells` ref; `remainingDigits` follows the *Number pad availability* rule in §3.7 in every mode; labels match the formats in §6.5; `formatTime(65_000) === '01:05'`, `formatTime(3_725_000) === '1:02:05'`; best/average time updated correctly.
 
