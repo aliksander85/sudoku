@@ -495,7 +495,7 @@ Each task ends with `npm test`, `npm run lint`, `npm run build` passing. Mark a 
   Files: `src/workers/generator.worker.ts`, `src/workers/generatePuzzle.ts`, `src/store/gameStore.ts`.
   Accept (manual, `npm run dev`): calling `startNewGame('expert')` from the console resolves with a puzzle while the page stays responsive; the production build emits a separate worker chunk.
 
-- [ ] **16. App shell and theme.** Remove template content (`App.css`, `index.css`, `src/assets/*`, template markup, unused `public/icons.svg`); add theme tokens, global styles, responsive layout containers.
+- [x] **16. App shell and theme.** Remove template content (`App.css`, `index.css`, `src/assets/*`, template markup, unused `public/icons.svg`); add theme tokens, global styles, responsive layout containers.
   Files: `src/App.tsx`, `src/App.module.css`, `src/main.tsx`, `src/styles/theme.css`, `src/styles/global.css`, `src/hooks/useTheme.ts`, `index.html` (title).
   Accept: empty layout renders in light and dark (system and forced); no horizontal scroll at 320 px; landscape switches to side panel at ≥ 900 px.
 
