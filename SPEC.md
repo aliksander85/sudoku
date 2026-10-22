@@ -451,7 +451,7 @@ Each task ends with `npm test`, `npm run lint`, `npm run build` passing. Mark a 
   Files: `src/lib/candidates.ts`, `src/lib/rules.ts`, `src/lib/candidates.test.ts`, `src/lib/rules.test.ts`.
   Accept: conflicts flag both cells for row/col/box duplicates and nothing on a valid grid; candidates match a hand-checked cell.
 
-- [ ] **5. Solver.** `solve`, `countSolutions`, `solveRandom`; fixtures file with ≥ 1 easy, 1 very hard and 1 multi-solution puzzle with their known solutions.
+- [x] **5. Solver.** `solve`, `countSolutions`, `solveRandom`; fixtures file with ≥ 1 easy, 1 very hard and 1 multi-solution puzzle with their known solutions.
   Files: `src/lib/solver.ts`, `src/lib/solver.test.ts`, `src/lib/__fixtures__/puzzles.ts`.
   Accept: fixtures solve to their known solutions; multi-solution → 2; conflicting input → `null`/0; empty grid → `countSolutions === 2`; `solveRandom` with different seeds gives different valid full grids; very hard fixture < 50 ms.
 
