@@ -499,7 +499,7 @@ Each task ends with `npm test`, `npm run lint`, `npm run build` passing. Mark a 
   Files: `src/App.tsx`, `src/App.module.css`, `src/main.tsx`, `src/styles/theme.css`, `src/styles/global.css`, `src/hooks/useTheme.ts`, `index.html` (title).
   Accept: empty layout renders in light and dark (system and forced); no horizontal scroll at 320 px; landscape switches to side panel at ≥ 900 px.
 
-- [ ] **17. Board and Cell: rendering and ARIA.** Install `@testing-library/react`, `@testing-library/user-event`, `jsdom`. Render values and notes, grid ARIA, roving tabindex, click-to-select.
+- [x] **17. Board and Cell: rendering and ARIA.** Install `@testing-library/react`, `@testing-library/user-event`, `jsdom`. Render values and notes, grid ARIA, roving tabindex, click-to-select.
   Files: `src/components/Board/*`, `src/components/Board/Board.test.tsx`, `src/App.tsx`, `package.json`.
   Accept: test — clicking a cell sets `aria-selected` and its label matches the spec; notes render as a 3×3 mini-grid.
 
