@@ -1,5 +1,6 @@
 import { bit } from '../candidates.ts'
 import { PEERS } from '../grid.ts'
+import { redoStep, undoStep } from './history.ts'
 import type { Cell, CellPatch, Digit, Direction, GameAction, GameState, HistoryStep } from '../types.ts'
 
 const MISTAKE_LIMIT = 3
@@ -103,6 +104,10 @@ export function reducer(state: GameState, action: GameAction): GameState {
       return toggleNote(state, action.digit)
     case 'erase':
       return erase(state)
+    case 'undo':
+      return isFrozen(state) ? state : undoStep(state)
+    case 'redo':
+      return isFrozen(state) ? state : redoStep(state)
     case 'toggleNotesMode':
       return { ...state, notesMode: !state.notesMode }
     case 'setMistakeMode':

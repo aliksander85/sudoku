@@ -471,7 +471,7 @@ Each task ends with `npm test`, `npm run lint`, `npm run build` passing. Mark a 
   Files: `src/lib/game/reducer.ts`, `src/lib/game/reducer.test.ts`.
   Accept: mistakes counted only in `check`/`limit`; changing mode mid-game keeps the count; 3rd mistake in limit → `lost`; last correct digit → `won`; all board actions ignored in `won`/`lost`.
 
-- [ ] **10. Undo/redo.** Patch-based history.
+- [x] **10. Undo/redo.** Patch-based history.
   Files: `src/lib/game/history.ts`, `src/lib/game/reducer.ts`, tests.
   Accept: placing a digit that clears peer notes is undone in one step; undo→redo yields deep-equal state; a new action clears `future`; undo does not change mistakes/hints/timer; undo ignored when won/lost/paused.
 
