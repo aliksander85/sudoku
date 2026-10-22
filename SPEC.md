@@ -475,7 +475,7 @@ Each task ends with `npm test`, `npm run lint`, `npm run build` passing. Mark a 
   Files: `src/lib/game/history.ts`, `src/lib/game/reducer.ts`, tests.
   Accept: placing a digit that clears peer notes is undone in one step; undo→redo yields deep-equal state; a new action clears `future`; undo does not change mistakes/hints/timer; undo ignored when won/lost/paused.
 
-- [ ] **11. Hint and auto-candidates.**
+- [x] **11. Hint and auto-candidates.**
   Files: `src/lib/game/reducer.ts`, tests.
   Accept: hint picks the selected empty/wrong cell, otherwise the cell chosen deterministically from `random`; hinted cells are locked; hint clears peers' notes; auto-candidates fills correct masks, is one undo step and counts as a hint; undo does not decrement `hintsUsed`.
 

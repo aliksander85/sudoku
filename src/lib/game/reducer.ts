@@ -1,7 +1,7 @@
-import { bit } from '../candidates.ts'
+import { bit, candidatesFor } from '../candidates.ts'
 import { PEERS } from '../grid.ts'
 import { redoStep, undoStep } from './history.ts'
-import type { Cell, CellPatch, Digit, Direction, GameAction, GameState, HistoryStep } from '../types.ts'
+import type { Cell, CellPatch, CellValue, Digit, Direction, GameAction, GameState, HistoryStep } from '../types.ts'
 
 const MISTAKE_LIMIT = 3
 
@@ -73,7 +73,46 @@ function judge(state: GameState, index: number, digit: Digit): GameState {
     const lost = state.mistakeMode === 'limit' && mistakes >= MISTAKE_LIMIT
     return { ...state, mistakes, status: lost ? 'lost' : state.status }
   }
-  return state.cells.every((c, k) => c.value === solution[k]) ? { ...state, status: 'won' } : state
+  return solved(state)
+}
+
+const solved = (state: GameState): GameState =>
+  state.cells.every((c, k) => c.value === state.puzzle.solution[k]) ? { ...state, status: 'won' } : state
+
+const withHint = (state: GameState): GameState => ({ ...state, hintsUsed: state.hintsUsed + 1 })
+
+function hint(state: GameState, random: number): GameState {
+  if (isFrozen(state)) return state
+  const { solution } = state.puzzle
+  const targets: number[] = []
+  state.cells.forEach((c, k) => {
+    if (!c.given && !c.hinted && c.value !== solution[k]) targets.push(k)
+  })
+  if (targets.length === 0) return state
+  const { selected } = state
+  const i =
+    selected !== null && targets.includes(selected)
+      ? selected
+      : targets[Math.min(Math.floor(random * targets.length), targets.length - 1)]
+  const digit = solution[i] as Digit
+  const step: HistoryStep = [patch(state, i, { value: digit, notes: 0, hinted: true })]
+  for (const peer of PEERS[i]) {
+    const { notes } = state.cells[peer]
+    if (notes & bit(digit)) step.push(patch(state, peer, { notes: notes & ~bit(digit) }))
+  }
+  return solved(withHint(commit(state, step)))
+}
+
+function autoCandidates(state: GameState): GameState {
+  if (isFrozen(state) || state.cells.every((c) => c.value !== 0)) return state
+  const grid = state.cells.map((c) => c.value) as CellValue[]
+  const step: HistoryStep = []
+  state.cells.forEach((c, k) => {
+    if (c.value !== 0) return
+    const notes = candidatesFor(grid, k)
+    if (notes !== c.notes) step.push(patch(state, k, { notes }))
+  })
+  return withHint(commit(state, step))
 }
 
 function erase(state: GameState): GameState {
@@ -104,6 +143,10 @@ export function reducer(state: GameState, action: GameAction): GameState {
       return toggleNote(state, action.digit)
     case 'erase':
       return erase(state)
+    case 'hint':
+      return hint(state, action.random)
+    case 'autoCandidates':
+      return autoCandidates(state)
     case 'undo':
       return isFrozen(state) ? state : undoStep(state)
     case 'redo':

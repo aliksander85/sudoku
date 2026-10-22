@@ -291,3 +291,123 @@ describe('mistakes and win/loss', () => {
     }
   })
 })
+
+const emptyIdxs = [...Array(81).keys()].filter((k) => !puzzle.givens[k])
+const solutionAt = (i: number) => puzzle.solution[i] as Digit
+const wrongAt = (i: number) => ((solutionAt(i) % 9) + 1) as Digit
+
+describe('hint', () => {
+  it('fills the selected empty cell with the solution', () => {
+    const s = reducer(at(emptyIdx), { type: 'hint', random: 0.5 })
+    expect(s.cells[emptyIdx]).toMatchObject({ value: solutionAt(emptyIdx), hinted: true, notes: 0 })
+    expect(s.hintsUsed).toBe(1)
+    expect(s.mistakes).toBe(0)
+    expect(s.status).toBe('playing')
+  })
+
+  it('replaces a wrong digit in the selected cell', () => {
+    const s = withCells(at(emptyIdx), { [emptyIdx]: { value: wrongAt(emptyIdx) } })
+    const next = reducer(s, { type: 'hint', random: 0 })
+    expect(next.cells[emptyIdx].value).toBe(solutionAt(emptyIdx))
+    expect(next.mistakes).toBe(0)
+  })
+
+  it('picks a cell from random when the selection is not a target', () => {
+    const correct = withCells(at(emptyIdx), { [emptyIdx]: { value: solutionAt(emptyIdx) } })
+    const first = reducer(correct, { type: 'hint', random: 0 })
+    const rest = emptyIdxs.filter((k) => k !== emptyIdx)
+    expect(first.cells[rest[0]].hinted).toBe(true)
+    const last = reducer(correct, { type: 'hint', random: 0.999 })
+    expect(last.cells[rest[rest.length - 1]].hinted).toBe(true)
+    expect(reducer({ ...fresh(), selected: givenIdx }, { type: 'hint', random: 0 }).cells[emptyIdxs[0]].hinted).toBe(true)
+    expect(reducer(fresh(), { type: 'hint', random: 0 }).cells[emptyIdxs[0]].hinted).toBe(true)
+  })
+
+  it('locks the hinted cell', () => {
+    const s = reducer(at(emptyIdx), { type: 'hint', random: 0 })
+    for (const action of [{ type: 'input', digit: wrongAt(emptyIdx) }, { type: 'erase' }, { type: 'note', digit: 1 }] as const) {
+      expect(reducer(s, action)).toBe(s)
+    }
+  })
+
+  it('clears the digit from peers notes only', () => {
+    const d = solutionAt(emptyIdx)
+    const bitD = 1 << (d - 1)
+    const s = withCells(at(emptyIdx), { [emptyIdx]: { notes: 3 }, [peerIdx]: { notes: bitD | 2 }, [farIdx]: { notes: bitD } })
+    const next = reducer(s, { type: 'hint', random: 0 })
+    expect(next.cells[peerIdx].notes).toBe(2)
+    expect(next.cells[farIdx]).toBe(s.cells[farIdx])
+  })
+
+  it('is a no-op with no targets, when paused or lost', () => {
+    const solved = { ...fresh(), cells: fresh().cells.map((c, k) => ({ ...c, value: puzzle.solution[k] })) }
+    expect(reducer(solved, { type: 'hint', random: 0 })).toBe(solved)
+    for (const status of ['paused', 'lost'] as const) {
+      const s = { ...at(emptyIdx), status }
+      expect(reducer(s, { type: 'hint', random: 0 })).toBe(s)
+    }
+  })
+
+  it('wins when the hint fills the last cell', () => {
+    const almost = { ...at(emptyIdx), cells: fresh().cells.map((c, k) => (k === emptyIdx ? c : { ...c, value: puzzle.solution[k] })) }
+    expect(reducer(almost, { type: 'hint', random: 0 }).status).toBe('won')
+  })
+
+  it('is undoable without decrementing hintsUsed, and redoable', () => {
+    const s = withCells(at(emptyIdx), { [peerIdx]: { notes: 1 << (solutionAt(emptyIdx) - 1) } })
+    const hinted = reducer(s, { type: 'hint', random: 0 })
+    const undone = reducer(hinted, { type: 'undo' })
+    expect(undone.cells).toEqual(s.cells)
+    expect(undone.hintsUsed).toBe(1)
+    const redone = reducer(undone, { type: 'redo' })
+    expect(redone.cells).toEqual(hinted.cells)
+    expect(redone.hintsUsed).toBe(1)
+  })
+})
+
+describe('autoCandidates', () => {
+  it('fills every empty cell with the digits missing from its peers', () => {
+    const s = reducer(fresh(), { type: 'autoCandidates' })
+    expect(s.hintsUsed).toBe(1)
+    expect(s.status).toBe('playing')
+    s.cells.forEach((c, i) => {
+      if (c.value !== 0) return expect(c.notes).toBe(0)
+      let used = 0
+      for (const p of PEERS[i]) if (s.cells[p].value) used |= 1 << (s.cells[p].value - 1)
+      expect(c.notes).toBe(0x1ff & ~used)
+    })
+  })
+
+  it('counts wrong digits as used and overwrites existing notes', () => {
+    const wrong = wrongAt(peerIdx)
+    const s = withCells(at(emptyIdx), { [peerIdx]: { value: wrong }, [emptyIdx]: { notes: 0x1ff } })
+    const next = reducer(s, { type: 'autoCandidates' })
+    expect(next.cells[emptyIdx].notes & (1 << (wrong - 1))).toBe(0)
+    expect(next.cells[peerIdx].notes).toBe(0)
+    expect(next.cells[givenIdx]).toBe(s.cells[givenIdx])
+  })
+
+  it('is one undo step and undo keeps hintsUsed', () => {
+    const s = reducer(fresh(), { type: 'autoCandidates' })
+    expect(s.past).toHaveLength(1)
+    const undone = reducer(s, { type: 'undo' })
+    expect(undone.cells).toEqual(fresh().cells)
+    expect(undone.hintsUsed).toBe(1)
+  })
+
+  it('counts a hint even when notes already match', () => {
+    const once = reducer(fresh(), { type: 'autoCandidates' })
+    const twice = reducer(once, { type: 'autoCandidates' })
+    expect(twice.hintsUsed).toBe(2)
+    expect(twice.past).toHaveLength(1)
+  })
+
+  it('is a no-op on a full board, when paused or lost', () => {
+    const full = { ...fresh(), cells: fresh().cells.map((c, k) => ({ ...c, value: puzzle.solution[k] })) }
+    expect(reducer(full, { type: 'autoCandidates' })).toBe(full)
+    for (const status of ['paused', 'lost'] as const) {
+      const s = { ...fresh(), status }
+      expect(reducer(s, { type: 'autoCandidates' })).toBe(s)
+    }
+  })
+})
