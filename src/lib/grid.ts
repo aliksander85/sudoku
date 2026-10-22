@@ -1,4 +1,4 @@
-import type { Cell, Digit } from './types.ts'
+import type { CellValue, Digit } from './types.ts'
 
 export function rowOf(i: number): number {
   return Math.floor(i / 9)
@@ -38,7 +38,7 @@ export const PEERS: readonly (readonly number[])[] = range(81).map((i) =>
   [...new Set(UNITS_OF[i].flat())].filter((p) => p !== i).sort((a, b) => a - b),
 )
 
-export function parseGrid(str: string): Cell[] {
+export function parseGrid(str: string): CellValue[] {
   if (str.length !== 81) {
     throw new Error(`Grid must be 81 characters, got ${str.length}`)
   }
@@ -49,7 +49,7 @@ export function parseGrid(str: string): Cell[] {
   })
 }
 
-export function serializeGrid(grid: readonly Cell[]): string {
+export function serializeGrid(grid: readonly CellValue[]): string {
   if (grid.length !== 81) {
     throw new Error(`Grid must have 81 cells, got ${grid.length}`)
   }

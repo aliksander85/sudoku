@@ -447,7 +447,7 @@ Each task ends with `npm test`, `npm run lint`, `npm run build` passing. Mark a 
   Files: `src/lib/rng.ts`, `src/lib/rng.test.ts`.
   Accept: same seed → same first 10 values; values in [0, 1); `shuffle` returns a permutation and does not mutate its input; `randInt` stays in bounds over 10k draws.
 
-- [ ] **4. Candidates and rules.** Bitmask helpers, `candidatesFor`, `findConflicts(values): boolean[]`, `isSolved(cells, solution)`, `digitCounts(values)`.
+- [x] **4. Candidates and rules.** Bitmask helpers, `candidatesFor`, `findConflicts(values): boolean[]`, `isSolved(cells, solution)`, `digitCounts(values)`.
   Files: `src/lib/candidates.ts`, `src/lib/rules.ts`, `src/lib/candidates.test.ts`, `src/lib/rules.test.ts`.
   Accept: conflicts flag both cells for row/col/box duplicates and nothing on a valid grid; candidates match a hand-checked cell.
 

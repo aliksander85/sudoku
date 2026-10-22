@@ -39,3 +39,5 @@ From `tsconfig.app.json`:
 ## Code style
 
 Match existing files: 2-space indent, single quotes, no semicolons, function components.
+
+Shared types live in src/lib/types.ts (SPEC.md §4.1) — always use them.
