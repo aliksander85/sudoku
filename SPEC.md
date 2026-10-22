@@ -11,7 +11,7 @@ A single-page classic 9×9 Sudoku game that runs entirely in the browser (no bac
 ### MVP
 
 - Puzzle generation at runtime in a Web Worker, seeded and reproducible, with a guaranteed unique solution.
-- Difficulties: Easy, Medium, Hard, Expert, defined by the number of givens (see §5).
+- Difficulties: Easy, Medium, Hard, Expert, defined by the number of givens (see §5.5).
 - Digit entry, erase, notes mode (toggle + Shift shortcut), automatic note cleanup in peers.
 - Conflict highlighting (always on); mistake modes: off / check against solution / 3-mistake limit.
 - Unlimited undo/redo per game.
@@ -44,30 +44,42 @@ A single-page classic 9×9 Sudoku game that runs entirely in the browser (no bac
 
 ## 3. Game rules & behavior
 
-**Board.** 81 cells, index `i = row * 9 + col` (row, col in 0–8). Box of a cell: `Math.floor(row / 3) * 3 + Math.floor(col / 3)`. Peers of a cell: the 20 other cells sharing its row, column or box.
+### 3.1 Board
 
-**Cell kinds.**
+81 cells, index `i = row * 9 + col` (row, col in 0–8). Box of a cell: `Math.floor(row / 3) * 3 + Math.floor(col / 3)`. Peers of a cell: the 20 other cells sharing its row, column or box.
+
+### 3.2 Cell kinds
+
 - *Given* — part of the puzzle; immutable.
 - *Hinted* — filled by a hint; immutable like a given (until undone).
 - *User* — editable: empty (optionally with notes) or holding a digit.
 
-**Conflict.** A filled cell is in conflict if any peer holds the same digit. Conflicts are always highlighted (both cells, givens included), independent of mistake mode.
+### 3.3 Conflict
 
-**Mistake (wrong digit).** A user digit that differs from the solution.
+A filled cell is in conflict if any peer holds the same digit. Conflicts are always highlighted (both cells, givens included), independent of mistake mode.
+
+### 3.4 Mistakes
+
+A user digit that differs from the solution.
 - `off`: mistakes are neither shown nor counted.
 - `check`: wrong digits are shown; each placement of a wrong digit increments `mistakes`.
 - `limit`: as `check`; when `mistakes` reaches 3 the game becomes `lost`.
 - Wrong digits stay on the board until the player changes or erases them.
 - Changing mistake mode mid-game keeps the current count; the loss check runs only when a new mistake is made.
 
-**Win condition.** Every cell's value equals the solution → status `won`. (With a unique solution, a full conflict-free board is the solution, so this matches the rules in every mode.)
+### 3.5 Win condition
 
-**Statuses.** `ready` (generated, no move yet) → `playing` (first board-changing action) ⇄ `paused` → `won` | `lost`.
+Every cell's value equals the solution → status `won`. (With a unique solution, a full conflict-free board is the solution, so this matches the rules in every mode.)
+
+### 3.6 Statuses
+
+`ready` (generated, no move yet) → `playing` (first board-changing action) ⇄ `paused` → `won` | `lost`.
 - Timer runs only in `playing`.
 - In `paused`, `won`, `lost`: all board-changing actions, undo/redo and selection are ignored; the board's digits are hidden while paused.
 - `won` and `lost` are terminal; the only ways out are New game or Restart (restart = same puzzle, reset to givens, zero timer/mistakes/hints/history).
 
-**Actions and edge cases.**
+### 3.7 Actions and edge cases
+
 - *Input digit* (not notes mode): no-op if no selection, cell is given/hinted, or cell already holds that digit. Otherwise set value, clear the cell's notes, remove that digit from the notes of all peers. Counted as a mistake if wrong (per mode). One undo step.
 - *Input in notes mode* / *Shift+digit*: toggle that note. No-op on a filled cell or given/hinted cell.
 - *Erase*: clears value or, if empty, clears all notes. No-op on given/hinted or already-empty-without-notes cells.
@@ -77,11 +89,17 @@ A single-page classic 9×9 Sudoku game that runs entirely in the browser (no bac
 - *Move selection*: arrows wrap at edges (moving right from col 8 goes to col 0, same row). With no selection, any move selects cell 0.
 - *Number pad availability*: a digit is disabled when 9 instances of it are "placed". In `off` mode every cell holding the digit counts (no information about correctness leaks). In `check`/`limit` only givens, hinted cells and correct user digits count — wrong digits are already marked and must not block entering the correct one.
 
-**Timer.** Elapsed time accumulates from `tick` actions while `playing`. Tab hidden → auto-pause; tab visible → auto-resume only if the pause was automatic. Time spent with the page closed is not counted.
+### 3.8 Timer
 
-**Stats.** Per difficulty: `played` increments on a game's first move (`ready → playing`); `won` and time totals update on win. Lost and abandoned games count as played, not won.
+Elapsed time accumulates from `tick` actions while `playing`. Tab hidden → auto-pause; tab visible → auto-resume only if the pause was automatic. Time spent with the page closed is not counted.
+
+### 3.9 Stats
+
+Per difficulty: `played` increments on a game's first move (`ready → playing`); `won` and time totals update on win. Lost and abandoned games count as played, not won.
 
 ## 4. Data model
+
+### 4.1 Types
 
 ```ts
 // src/lib/types.ts
@@ -161,12 +179,15 @@ export interface DifficultyStats {
 export type Stats = Record<Difficulty, DifficultyStats>
 ```
 
-**Invariants.**
+### 4.2 Invariants
+
 - The reducer is immutable and **preserves references of unchanged cells** (per-cell selectors depend on it).
 - History is patch-based (`before`/`after` per changed cell), so persisted history stays small.
 - New games are created by `createGame(puzzle, mistakeMode): GameState`, not by an action.
 
-**Persistence (Zustand `persist`).**
+### 4.3 Persistence
+
+Stored with Zustand `persist`.
 
 | Key | Content | Version |
 |---|---|---|
@@ -180,13 +201,21 @@ On version mismatch without a migration, or on parse/shape failure, the stored v
 
 All in `src/lib`, synchronous, pure, deterministic given a seed.
 
-**RNG.** `mulberry32(seed: number)` → `() => number` in [0, 1). Helpers: `randInt(rng, n)`, `shuffle(rng, arr)` (Fisher–Yates, returns new array). UI creates seeds with `crypto.getRandomValues(new Uint32Array(1))[0]`.
+### 5.1 RNG
 
-**Precomputed tables** (`grid.ts`): `ROWS`, `COLS`, `BOXES` (9 index arrays each), `UNITS` (27), `PEERS[81]` (20 each), `UNITS_OF[81]` (3 each).
+`mulberry32(seed: number)` → `() => number` in [0, 1). Helpers: `randInt(rng, n)`, `shuffle(rng, arr)` (Fisher–Yates, returns new array). UI creates seeds with `crypto.getRandomValues(new Uint32Array(1))[0]`.
 
-**Bitmask candidates** (`candidates.ts`): mask `0x1FF` = all digits. `candidatesFor(grid, i)` = `ALL & ~(union of peer values' bits)`. Popcount and `maskToDigits` via lookup table of 512 entries.
+### 5.2 Precomputed tables
 
-**Solver** (`solver.ts`).
+In `grid.ts`: `ROWS`, `COLS`, `BOXES` (9 index arrays each), `UNITS` (27), `PEERS[81]` (20 each), `UNITS_OF[81]` (3 each).
+
+### 5.3 Bitmask candidates
+
+In `candidates.ts`: mask `0x1FF` = all digits. `candidatesFor(grid, i)` = `ALL & ~(union of peer values' bits)`. Popcount and `maskToDigits` via lookup table of 512 entries.
+
+### 5.4 Solver
+
+In `solver.ts`:
 - Backtracking over a working copy with per-row/col/box used-digit masks.
 - Branch on the empty cell with the fewest candidates (MRV); cell with 0 candidates → backtrack.
 - `solve(grid): Grid | null` — first solution, `null` if none or if the input already has conflicts.
@@ -194,7 +223,9 @@ All in `src/lib`, synchronous, pure, deterministic given a seed.
 - `solveRandom(grid, rng)` — same, but candidate order shuffled; used to make full solutions.
 - Target: hardest known puzzles solve in < 50 ms on a laptop.
 
-**Difficulty (MVP).** Difficulty is defined only by the number of givens. This correlates with real difficulty only roughly; a technique-based rating is planned (see §2 Later), and the generator is structured so that a rating check can be added as an extra acceptance condition without changing its interface.
+### 5.5 Difficulty
+
+Difficulty is defined only by the number of givens. This correlates with real difficulty only roughly; a technique-based rating is planned (see §2 Later), and the generator is structured so that a rating check can be added as an extra acceptance condition without changing its interface.
 
 | Difficulty | Givens range | MAX_ATTEMPTS |
 |---|---|---|
@@ -203,7 +234,9 @@ All in `src/lib`, synchronous, pure, deterministic given a seed.
 | hard | 28–31 | 30 |
 | expert | 24–27 | 50 |
 
-**Generator** (`generator.ts`).
+### 5.6 Generator
+
+In `generator.ts`:
 ```
 generatePuzzle(difficulty, seed): Puzzle
   rng   = mulberry32(seed)
@@ -227,11 +260,14 @@ generatePuzzle(difficulty, seed): Puzzle
 - Fallback (`best`) exists only as a safety net; for the test seeds the result must be within range.
 - Typical time target in the worker: < 300 ms for every difficulty.
 
-**Worker** (`src/workers/generator.worker.ts`). Receives `{ difficulty, seed }`, replies with a `Puzzle` or `{ error }`. Client: `generatePuzzle(difficulty, seed?): Promise<Puzzle>` in `src/workers/generatePuzzle.ts` (module worker via `new Worker(new URL('./generator.worker.ts', import.meta.url), { type: 'module' })`; one worker instance, reused).
+### 5.7 Worker
+
+In `src/workers/generator.worker.ts`: Receives `{ difficulty, seed }`, replies with a `Puzzle` or `{ error }`. Client: `generatePuzzle(difficulty, seed?): Promise<Puzzle>` in `src/workers/generatePuzzle.ts` (module worker via `new Worker(new URL('./generator.worker.ts', import.meta.url), { type: 'module' })`; one worker instance, reused).
 
 ## 6. UI/UX
 
-**Layout.**
+### 6.1 Layout
+
 ```
 Portrait (default)                  Landscape (≥ 900px wide and wider than tall)
 ┌─────────────────────────────┐     ┌──────────────────────┬──────────────┐
@@ -246,20 +282,26 @@ Portrait (default)                  Landscape (≥ 900px wide and wider than tal
 ```
 - Board: CSS Grid, square, size `min(100vw - 32px, 100dvh - <header + controls>, 560px)`; 16 px side gutter; thicker borders between boxes. Font sizes in container-query units (`cqi`) so they scale with the board.
 - Cell: value centered; notes as a 3×3 mini-grid of small digits.
-- Number pad: each button shows the digit and remaining count (per §3 "Number pad availability"); disabled at 0 remaining. In notes mode, the pad looks visibly different (outlined digits).
+- Number pad: each button shows the digit and remaining count (per the *Number pad availability* rule in §3.7); disabled at 0 remaining. In notes mode, the pad looks visibly different (outlined digits).
 - Toolbar: Undo, Redo, Erase, Notes (toggle, `aria-pressed`), Hint, Pause/Resume. Auto-candidates is in the settings dialog ("Fill candidates", counts as a hint).
 - Status line: difficulty, timer (hidden if `showTimer` is false), mistakes (`Mistakes 1/3` in limit mode, `Mistakes 1` in check mode, hidden in off mode).
 - Dialogs use native `<dialog>`: New game (4 difficulty buttons; shows a confirmation step if a game is in `playing`/`paused`), Won (time, mistakes, hints, best time, New game), Lost (Restart, New game), Settings (mistake mode, show timer, theme, fill candidates, reset stats, stats table).
 - While generating: the new game dialog shows a spinner; the current board remains visible.
 - Paused: digits hidden, overlay "Paused — Resume".
 
-**Visual states of a cell** (priority high → low): selected > conflict/wrong > same digit as selected > peer of selected > default.
+### 6.2 Cell visual states
+
+Priority high → low: selected > conflict/wrong > same digit as selected > peer of selected > default.
 - Given: normal-weight text color. User: accent color. Hinted: accent with dotted underline.
 - Wrong (check/limit): error color + solid underline. Conflict: error-tinted background + error color text.
 
-**Mouse/touch.** Click/tap a cell to select it; tap a pad digit to input; toolbar buttons as above. No hover-only behavior; touch targets ≥ 44 px tall (pad buttons are 1/9 of board width, ≥ 32 px wide at 320 px).
+### 6.3 Mouse and touch
 
-**Keyboard** (global `keydown` on `document`; ignored while a dialog is open; uses `event.code` so Shift+digit works on every layout).
+Click/tap a cell to select it; tap a pad digit to input; toolbar buttons as above. No hover-only behavior; touch targets ≥ 44 px tall (pad buttons are 1/9 of board width, ≥ 32 px wide at 320 px).
+
+### 6.4 Keyboard
+
+Global `keydown` on `document`; ignored while a dialog is open; uses `event.code` so Shift+digit works on every layout.
 
 | Key | Action |
 |---|---|
@@ -274,16 +316,21 @@ Portrait (default)                  Landscape (≥ 900px wide and wider than tal
 | `Ctrl/Cmd+Shift+Z`, `Ctrl+Y` | Redo |
 | `Esc` | Close dialog (native) |
 
-**Accessibility.**
+### 6.5 Accessibility
+
 - Board `role="grid"` with 9 `role="row"` and 81 `role="gridcell"`. Roving tabindex: the selected cell (or cell 0) has `tabIndex=0`, focus follows selection, `aria-selected` on the selected cell.
 - `aria-label` per cell: `"Row 3, column 5, 7, given"`, `"Row 3, column 5, empty, notes 1 4 9"`, `"…, 4, wrong"`, `"…, conflict"`.
 - An `aria-live="polite"` region announces conflicts, wrong digits, hint results, pause and win/loss.
 - Errors are never shown by color alone (underline / background + label). Text and states meet WCAG AA contrast in both themes.
 - `prefers-reduced-motion`: no animations (win animation and transitions off).
 
-**Theme.** CSS custom properties in `src/styles/theme.css`. Light tokens on `:root`; dark tokens under `@media (prefers-color-scheme: dark)` for `:root:not([data-theme="light"])`, plus `:root[data-theme="dark"]`. The settings store sets `data-theme` on `<html>` (removed for `system`).
+### 6.6 Theme
+
+CSS custom properties in `src/styles/theme.css`. Light tokens on `:root`; dark tokens under `@media (prefers-color-scheme: dark)` for `:root:not([data-theme="light"])`, plus `:root[data-theme="dark"]`. The settings store sets `data-theme` on `<html>` (removed for `system`).
 
 ## 7. Architecture
+
+### 7.1 Folder structure
 
 ```
 src/
@@ -328,7 +375,9 @@ src/
   App.tsx, App.module.css, main.tsx
 ```
 
-**State management: Zustand + pure reducer.**
+### 7.2 State management
+
+Zustand + pure reducer.
 - `gameReducer` holds all game logic. The store only wraps it: `dispatch: (a) => set((s) => ({ game: s.game && gameReducer(s.game, a) }))`.
 - Side effects live in the store or hooks, never in the reducer: generation, stats updates on status transitions (`ready→playing`, `→won`, `→lost`), randomness for hints, and announcements.
 - Components subscribe narrowly:
@@ -339,28 +388,48 @@ src/
 
 ## 8. Testing strategy
 
-- **Tools:** Vitest; `@testing-library/react`, `@testing-library/user-event` and `jsdom` for components. Test files use `// @vitest-environment jsdom` when they need the DOM; the default environment is `node`. Explicit `import { describe, it, expect } from 'vitest'` (no globals).
-- **Scripts:** `test` (`vitest run`), `test:watch` (`vitest`).
-- **Coverage:** no numeric target in MVP. Every public function in `src/lib` has tests for its normal behavior and the edge cases listed in §3.
-- **Unit (`src/lib`):**
-  - grid tables (sizes, symmetry, no self-peers), parse/serialize round-trip.
-  - RNG determinism, shuffle is a permutation.
-  - Candidates, conflicts, win detection.
-  - Solver on fixtures: valid unique puzzle → known solution; multi-solution → `countSolutions === 2`; conflicting input → `null`/0; hardest fixture within time.
-  - Generator property tests: for a fixed list of 10 seeds × 4 difficulties, the result has a unique solution, `givens ⊂ solution`, the givens count is within the difficulty's range, 180° symmetry holds, and the same seed produces the same puzzle.
-  - Reducer: every action and every edge case in §3, including reference preservation of unchanged cells and undo/redo round-trips that restore exact state.
-  - Number pad counts in `off` vs `check`/`limit` mode.
-  - Stats and format functions.
-- **Store:** persist round-trip and version-mismatch discard (jsdom `localStorage`).
-- **Components/integration (few, high value):**
-  - Click cell + pad input.
-  - Keyboard navigation and input; Shift+digit note.
-  - Undo/redo via keys.
-  - Conflict and wrong-digit labels.
-  - Winning a near-complete fixture game shows the result dialog.
-- **Not tested automatically in MVP:** worker wiring, visual layout, theming (manual checklist in task 26).
+### 8.1 Tools and scripts
+
+- Vitest; `@testing-library/react`, `@testing-library/user-event` and `jsdom` for components.
+- Test files use `// @vitest-environment jsdom` when they need the DOM; the default environment is `node`.
+- Explicit `import { describe, it, expect } from 'vitest'` (no globals).
+- Scripts: `test` (`vitest run`), `test:watch` (`vitest`).
+
+### 8.2 Coverage
+
+No numeric target in MVP. Every public function in `src/lib` has tests for its normal behavior and the edge cases listed in §3.
+
+### 8.3 Unit tests (`src/lib`)
+
+- Grid tables (sizes, symmetry, no self-peers), parse/serialize round-trip.
+- RNG determinism, shuffle is a permutation.
+- Candidates, conflicts, win detection.
+- Solver on fixtures: valid unique puzzle → known solution; multi-solution → `countSolutions === 2`; conflicting input → `null`/0; hardest fixture within time.
+- Generator property tests: for a fixed list of 10 seeds × 4 difficulties, the result has a unique solution, `givens ⊂ solution`, the givens count is within the difficulty's range, 180° symmetry holds, and the same seed produces the same puzzle.
+- Reducer: every action and every edge case in §3, including reference preservation of unchanged cells and undo/redo round-trips that restore exact state.
+- Number pad counts in `off` vs `check`/`limit` mode.
+- Stats and format functions.
+
+### 8.4 Store tests
+
+Persist round-trip and version-mismatch discard (jsdom `localStorage`).
+
+### 8.5 Component and integration tests
+
+Few, high value:
+- Click cell + pad input.
+- Keyboard navigation and input; Shift+digit note.
+- Undo/redo via keys.
+- Conflict and wrong-digit labels.
+- Winning a near-complete fixture game shows the result dialog.
+
+### 8.6 Not tested automatically in MVP
+
+Worker wiring, visual layout, theming (manual checklist in task 26).
 
 ## 9. Task breakdown
+
+References like "§3.7" point to numbered headings in this file.
 
 Each task ends with `npm test`, `npm run lint`, `npm run build` passing. Mark a task done by changing `[ ]` to `[x]`.
 
@@ -384,9 +453,9 @@ Each task ends with `npm test`, `npm run lint`, `npm run build` passing. Mark a 
   Files: `src/lib/solver.ts`, `src/lib/solver.test.ts`, `src/lib/__fixtures__/puzzles.ts`.
   Accept: fixtures solve to their known solutions; multi-solution → 2; conflicting input → `null`/0; empty grid → `countSolutions === 2`; `solveRandom` with different seeds gives different valid full grids; very hard fixture < 50 ms.
 
-- [ ] **6. Generator.** `generatePuzzle(difficulty, seed)` per §5.
+- [ ] **6. Generator.** `generatePuzzle(difficulty, seed)` per §5.5–5.6.
   Files: `src/lib/generator.ts`, `src/lib/generator.test.ts`.
-  Accept: property tests from §8 pass for the fixed seed list; the generator test file finishes < 20 s.
+  Accept: generator property tests from §8.3 pass for the fixed seed list; the generator test file finishes < 20 s.
 
 - [ ] **7. Game creation, selection, movement.** `createGame`, reducer skeleton with `select`, `move`, `toggleNotesMode`, `setMistakeMode`.
   Files: `src/lib/game/createGame.ts`, `src/lib/game/reducer.ts`, `src/lib/game/reducer.test.ts`.
@@ -394,7 +463,7 @@ Each task ends with `npm test`, `npm run lint`, `npm run build` passing. Mark a 
 
 - [ ] **8. Input, notes, erase.** `input`, `note`, `erase` with peer note cleanup; first board change moves `ready → playing`.
   Files: `src/lib/game/reducer.ts`, `src/lib/game/reducer.test.ts`.
-  Accept: every rule in §3 "Actions and edge cases" for input/note/erase; placing a digit removes it from peers' notes; no-ops on givens/hinted cells; unchanged cells keep references.
+  Accept: every input/note/erase rule in §3.7; placing a digit removes it from peers' notes; no-ops on givens/hinted cells; unchanged cells keep references.
 
 - [ ] **9. Mistakes and win/loss.** Mistake counting per mode, `lost` on the 3rd mistake in `limit`, `won` on the last correct digit, terminal statuses.
   Files: `src/lib/game/reducer.ts`, `src/lib/game/reducer.test.ts`.
@@ -414,9 +483,9 @@ Each task ends with `npm test`, `npm run lint`, `npm run build` passing. Mark a 
 
 - [ ] **13. Selectors, format, settings, stats.** `cellFlags`, memoized `getConflicts`, `remainingDigits`, `cellLabel`, `formatTime`, `DEFAULT_SETTINGS`, `recordStart/recordWin`.
   Files: `src/lib/game/selectors.ts`, `src/lib/format.ts`, `src/lib/settings.ts`, `src/lib/stats.ts`, tests.
-  Accept: flags correct for selected/peer/same-digit/conflict/wrong (wrong hidden in `off`); `getConflicts` returns the same array for the same `cells` ref; `remainingDigits` follows §3 "Number pad availability" in every mode; labels match §6 formats; `formatTime(65_000) === '01:05'`, `formatTime(3_725_000) === '1:02:05'`; best/average time updated correctly.
+  Accept: flags correct for selected/peer/same-digit/conflict/wrong (wrong hidden in `off`); `getConflicts` returns the same array for the same `cells` ref; `remainingDigits` follows the *Number pad availability* rule in §3.7 in every mode; labels match the formats in §6.5; `formatTime(65_000) === '01:05'`, `formatTime(3_725_000) === '1:02:05'`; best/average time updated correctly.
 
-- [ ] **14. Stores.** Install `zustand`. Game, settings and stats stores with `persist` (keys/versions per §4); `startNewGame` calls an injectable generator; stats updated on status transitions.
+- [ ] **14. Stores.** Install `zustand`. Game, settings and stats stores with `persist` (keys/versions per §4.3); `startNewGame` calls an injectable generator; stats updated on status transitions.
   Files: `src/store/*.ts`, `src/store/gameStore.test.ts`, `package.json`.
   Accept: (jsdom) state survives store re-creation from `localStorage`; wrong version or corrupted JSON → defaults; `won` game is not restored; `ready→playing` increments `played` once.
 
@@ -432,17 +501,17 @@ Each task ends with `npm test`, `npm run lint`, `npm run build` passing. Mark a 
   Files: `src/components/Board/*`, `src/components/Board/Board.test.tsx`, `src/App.tsx`, `package.json`.
   Accept: test — clicking a cell sets `aria-selected` and its label matches the spec; notes render as a 3×3 mini-grid.
 
-- [ ] **18. Cell visual states and render performance.** Selected/peer/same-digit/conflict/wrong/given/hinted styles per §6 priority; narrow store subscriptions.
+- [ ] **18. Cell visual states and render performance.** Selected/peer/same-digit/conflict/wrong/given/hinted styles per §6.2 priority; narrow store subscriptions.
   Files: `src/components/Board/*`.
-  Accept: manual — highlights match §6 priority in both themes; React DevTools "highlight updates" shows only affected cells re-render on input.
+  Accept: manual — highlights match §6.2 priority in both themes; React DevTools "highlight updates" shows only affected cells re-render on input.
 
 - [ ] **19. Number pad and toolbar.**
   Files: `src/components/NumberPad/*`, `src/components/Toolbar/*`, tests, `src/App.tsx`.
-  Accept: test — select cell, click pad `5` → cell shows 5; notes toggle changes pad behavior; undo button restores; pad digit disabled per §3 "Number pad availability".
+  Accept: test — select cell, click pad `5` → cell shows 5; notes toggle changes pad behavior; undo button restores; pad digit disabled per the *Number pad availability* rule in §3.7.
 
 - [ ] **20. Keyboard.**
   Files: `src/hooks/useKeyboard.ts`, `src/hooks/useKeyboard.test.tsx`, `src/App.tsx`.
-  Accept: test — every shortcut in §6 table dispatches the right action; Shift+Digit1 toggles note 1; keys are ignored while a dialog is open; focus follows selection.
+  Accept: test — every shortcut in the §6.4 table dispatches the right action; Shift+Digit1 toggles note 1; keys are ignored while a dialog is open; focus follows selection.
 
 - [ ] **21. Status bar, timer, pause.**
   Files: `src/components/StatusBar/*`, `src/hooks/useTimer.ts`, `src/hooks/useAutoPause.ts`, `src/components/Board/*` (paused overlay), `src/App.tsx`.
