@@ -455,7 +455,7 @@ Each task ends with `npm test`, `npm run lint`, `npm run build` passing. Mark a 
   Files: `src/lib/solver.ts`, `src/lib/solver.test.ts`, `src/lib/__fixtures__/puzzles.ts`.
   Accept: fixtures solve to their known solutions; multi-solution → 2; conflicting input → `null`/0; empty grid → `countSolutions === 2`; `solveRandom` with different seeds gives different valid full grids; very hard fixture < 50 ms.
 
-- [ ] **6. Generator.** `generatePuzzle(difficulty, seed)` per §5.5–5.6.
+- [x] **6. Generator.** `generatePuzzle(difficulty, seed)` per §5.5–5.6.
   Files: `src/lib/generator.ts`, `src/lib/generator.test.ts`.
   Accept: generator property tests from §8.3 pass for the fixed seed list; the generator test file finishes < 20 s.
 
