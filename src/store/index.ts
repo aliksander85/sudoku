@@ -1,4 +1,4 @@
-import { generatePuzzle } from '../lib/generator.ts'
+import { generatePuzzle } from '../workers/generatePuzzle.ts'
 import type { GameState } from '../lib/types.ts'
 import { createGameStore } from './gameStore.ts'
 import { createSettingsStore } from './settingsStore.ts'

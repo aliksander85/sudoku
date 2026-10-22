@@ -491,7 +491,7 @@ Each task ends with `npm test`, `npm run lint`, `npm run build` passing. Mark a 
   Files: `src/store/*.ts`, `src/store/gameStore.test.ts`, `package.json`.
   Accept: (jsdom) state survives store re-creation from `localStorage`; wrong version or corrupted JSON → defaults; `won` game is not restored; `ready→playing` increments `played` once.
 
-- [ ] **15. Worker.** Worker + promise client; wire into `gameStore.startNewGame`.
+- [x] **15. Worker.** Worker + promise client; wire into `gameStore.startNewGame`.
   Files: `src/workers/generator.worker.ts`, `src/workers/generatePuzzle.ts`, `src/store/gameStore.ts`.
   Accept (manual, `npm run dev`): calling `startNewGame('expert')` from the console resolves with a puzzle while the page stays responsive; the production build emits a separate worker chunk.
 
