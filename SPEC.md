@@ -209,6 +209,8 @@ All in `src/lib`, synchronous, pure, deterministic given a seed.
 
 In `grid.ts`: `ROWS`, `COLS`, `BOXES` (9 index arrays each), `UNITS` (27), `PEERS[81]` (20 each), `UNITS_OF[81]` (3 each).
 
+`parseGrid` accepts 81 chars of `1`–`9` with `.` or `0` for empty (anything else throws); `serializeGrid` writes empty cells as `.`.
+
 ### 5.3 Bitmask candidates
 
 In `candidates.ts`: mask `0x1FF` = all digits. `candidatesFor(grid, i)` = `ALL & ~(union of peer values' bits)`. Popcount and `maskToDigits` via lookup table of 512 entries.
@@ -437,7 +439,7 @@ Each task ends with `npm test`, `npm run lint`, `npm run build` passing. Mark a 
   Files: `package.json`, `vite.config.ts`, `CLAUDE.md`, `src/lib/types.ts`, `src/lib/types.test.ts` (placeholder that imports types).
   Accept: `npm test` runs 1 passing test; build still type-checks.
 
-- [ ] **2. Grid tables and parsing.** Add `ROWS/COLS/BOXES/UNITS/PEERS/UNITS_OF`, `rowOf/colOf/boxOf`, `parseGrid(str)`, `serializeGrid(grid)`.
+- [x] **2. Grid tables and parsing.** Add `ROWS/COLS/BOXES/UNITS/PEERS/UNITS_OF`, `rowOf/colOf/boxOf`, `parseGrid(str)`, `serializeGrid(grid)`.
   Files: `src/lib/grid.ts`, `src/lib/grid.test.ts`.
   Accept: 27 units of 9; every `PEERS[i]` has 20 unique entries without `i`; peer relation is symmetric; parse/serialize round-trip; invalid length/characters throw.
 
