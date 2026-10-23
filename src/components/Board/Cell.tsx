@@ -10,6 +10,7 @@ function Cell({ index }: { index: number }) {
   const flags = useGameStore((s) => cellFlags(s.game!, index))
   const isTabStop = useGameStore((s) => (s.game!.selected ?? 0) === index)
   const label = useGameStore((s) => cellLabel(s.game!, index))
+  const paused = useGameStore((s) => s.game!.status === 'paused')
   const dispatch = useGameStore((s) => s.dispatch)
 
   return (
@@ -23,11 +24,11 @@ function Cell({ index }: { index: number }) {
       data-conflict={(flags & CELL_FLAG.conflict) !== 0}
       data-wrong={(flags & CELL_FLAG.wrong) !== 0}
       aria-selected={(flags & CELL_FLAG.selected) !== 0}
-      aria-label={label}
+      aria-label={paused ? `Row ${Math.floor(index / 9) + 1}, column ${(index % 9) + 1}` : label}
       tabIndex={isTabStop ? 0 : -1}
       onClick={() => dispatch({ type: 'select', index })}
     >
-      {cell.value !== 0 ? (
+      {paused ? null : cell.value !== 0 ? (
         <span
           className={styles.value}
           data-kind={cell.given ? 'given' : cell.hinted ? 'hinted' : 'entered'}

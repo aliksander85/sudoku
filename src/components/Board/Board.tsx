@@ -8,6 +8,8 @@ const COLS = Array.from({ length: 9 }, (_, c) => c)
 
 function Board() {
   const ref = useRef<HTMLDivElement>(null)
+  const paused = useGameStore((s) => s.game!.status === 'paused')
+  const dispatch = useGameStore((s) => s.dispatch)
   const selected = useGameStore((s) => s.game?.selected ?? null)
 
   useEffect(() => {
@@ -16,6 +18,7 @@ function Board() {
   }, [selected])
 
   return (
+    <div className={styles.wrap}>
     <div ref={ref} role="grid" aria-label="Sudoku board" className={styles.board}>
       {ROWS.map((r) => (
         <div key={r} role="row" className={styles.row}>
@@ -24,6 +27,15 @@ function Board() {
           ))}
         </div>
       ))}
+    </div>
+      {paused && (
+        <div className={styles.overlay}>
+          <span>Paused</span>
+          <button type="button" onClick={() => dispatch({ type: 'resume', by: 'user' })}>
+            Resume
+          </button>
+        </div>
+      )}
     </div>
   )
 }

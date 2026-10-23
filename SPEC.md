@@ -515,7 +515,7 @@ Each task ends with `npm test`, `npm run lint`, `npm run build` passing. Mark a 
   Files: `src/hooks/useKeyboard.ts`, `src/hooks/useKeyboard.test.tsx`, `src/App.tsx`.
   Accept: test — every shortcut in the §6.4 table dispatches the right action; Shift+Digit1 toggles note 1; keys are ignored while a dialog is open; focus follows selection.
 
-- [ ] **21. Status bar, timer, pause.**
+- [x] **21. Status bar, timer, pause.**
   Files: `src/components/StatusBar/*`, `src/hooks/useTimer.ts`, `src/hooks/useAutoPause.ts`, `src/components/Board/*` (paused overlay), `src/App.tsx`.
   Accept: manual — timer advances only while playing; switching tabs pauses and returns resumes; user pause persists across tab switch; digits hidden while paused; mistakes display per mode; `showTimer=false` hides timer.
 

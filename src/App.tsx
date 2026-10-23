@@ -1,15 +1,20 @@
 import { useEffect } from 'react'
 import Board from './components/Board/Board.tsx'
 import NumberPad from './components/NumberPad/NumberPad.tsx'
+import StatusBar from './components/StatusBar/StatusBar.tsx'
 import Toolbar from './components/Toolbar/Toolbar.tsx'
+import { useAutoPause } from './hooks/useAutoPause.ts'
 import { useKeyboard } from './hooks/useKeyboard.ts'
 import { useTheme } from './hooks/useTheme.ts'
+import { useTimer } from './hooks/useTimer.ts'
 import { useGameStore } from './store/index.ts'
 import styles from './App.module.css'
 
 function App() {
   useTheme()
   useKeyboard()
+  useTimer()
+  useAutoPause()
   const hasGame = useGameStore((s) => s.game !== null)
   const startNewGame = useGameStore((s) => s.startNewGame)
 
@@ -23,7 +28,7 @@ function App() {
       <main className={styles.main}>
         <header className={styles.header}>
           <h1>Sudoku</h1>
-          <p className={styles.status}>Medium · 00:00 · Mistakes 0</p>
+          {hasGame && <StatusBar />}
         </header>
         <div className={styles.board}>{hasGame && <Board />}</div>
       </main>

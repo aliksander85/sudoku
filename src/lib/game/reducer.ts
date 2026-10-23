@@ -4,7 +4,7 @@ import { createGame } from './createGame.ts'
 import { redoStep, undoStep } from './history.ts'
 import type { Cell, CellPatch, CellValue, Digit, Direction, GameAction, GameState, HistoryStep } from '../types.ts'
 
-const MISTAKE_LIMIT = 3
+export const MISTAKE_LIMIT = 3
 
 const isFrozen =(state: GameState): boolean =>
   state.status === 'paused' || state.status === 'won' || state.status === 'lost'
