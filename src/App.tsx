@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import NewGameDialog from './components/dialogs/NewGameDialog.tsx'
+import ResultDialog from './components/dialogs/ResultDialog.tsx'
 import Board from './components/Board/Board.tsx'
 import NumberPad from './components/NumberPad/NumberPad.tsx'
 import StatusBar from './components/StatusBar/StatusBar.tsx'
@@ -35,6 +36,7 @@ function App() {
         {hasGame && <Toolbar />}
         {hasGame && <NumberPad />}
       </div>
+      <ResultDialog suppressed={newGameOpen} onNewGame={() => setNewGameOpen(true)} />
       <NewGameDialog open={newGameOpen} dismissible={hasGame} onClose={() => setNewGameOpen(false)} />
     </div>
   )

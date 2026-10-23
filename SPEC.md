@@ -523,7 +523,7 @@ Each task ends with `npm test`, `npm run lint`, `npm run build` passing. Mark a 
   Files: `src/components/dialogs/Dialog.tsx`, `NewGameDialog.tsx`, `dialogs.module.css`, `src/App.tsx`.
   Accept: first load without a saved game opens the dialog; confirmation shown only for an in-progress game; spinner while generating; reload mid-game resumes the same board, notes, time and history.
 
-- [ ] **23. Result dialogs and stats.**
+- [x] **23. Result dialogs and stats.**
   Files: `src/components/dialogs/ResultDialog.tsx`, `src/App.tsx`, `src/components/dialogs/ResultDialog.test.tsx`.
   Accept: test — finishing a near-complete fixture game shows time/mistakes/hints; manual — 3rd mistake in limit mode shows Lost with working Restart; best time updates.
 

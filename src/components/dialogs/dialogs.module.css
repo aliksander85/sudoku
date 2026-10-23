@@ -77,3 +77,19 @@
     animation-duration: 3s;
   }
 }
+
+.stats {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 16px;
+  margin: 0;
+}
+
+.stats dt {
+  color: var(--text-muted, inherit);
+}
+
+.stats dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
