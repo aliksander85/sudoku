@@ -13,13 +13,13 @@ function Toolbar() {
 
   return (
     <div role="toolbar" aria-label="Game controls" className={styles.toolbar}>
-      <button type="button" disabled={!canUndo} aria-label="Undo" onClick={() => dispatch({ type: 'undo' })}>
+      <button type="button" disabled={!canUndo} aria-label="Undo" title="Undo" onClick={() => dispatch({ type: 'undo' })}>
         ↶
       </button>
-      <button type="button" disabled={!canRedo} aria-label="Redo" onClick={() => dispatch({ type: 'redo' })}>
+      <button type="button" disabled={!canRedo} aria-label="Redo" title="Redo" onClick={() => dispatch({ type: 'redo' })}>
         ↷
       </button>
-      <button type="button" disabled={frozen || paused} aria-label="Erase" onClick={() => dispatch({ type: 'erase' })}>
+      <button type="button" disabled={frozen || paused} aria-label="Erase" title="Delete" onClick={() => dispatch({ type: 'erase' })}>
         ⌫
       </button>
       <button
@@ -30,13 +30,14 @@ function Toolbar() {
       >
         ✎ Notes
       </button>
-      <button type="button" disabled={frozen || paused} aria-label="Hint" onClick={hint}>
+      <button type="button" disabled={frozen || paused} aria-label="Hint" title="Hint" onClick={hint}>
         💡
       </button>
       <button
         type="button"
         disabled={frozen || status === 'ready'}
         aria-label={paused ? 'Resume' : 'Pause'}
+        title={paused ? 'Resume' : 'Pause'}
         onClick={() => dispatch({ type: paused ? 'resume' : 'pause', by: 'user' })}
       >
         {paused ? '▶' : '⏸'}
