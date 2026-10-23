@@ -9,6 +9,16 @@
   border: 1px solid var(--border);
   cursor: pointer;
   user-select: none;
+  position: relative;
+}
+
+/* Conflicts get a dashed frame so they are not signalled by color alone (§6.5) */
+.cell[data-conflict='true']::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border: 2px dashed var(--wrong);
+  pointer-events: none;
 }
 
 .cell:focus-visible {

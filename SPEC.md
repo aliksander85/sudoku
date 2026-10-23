@@ -531,7 +531,7 @@ Each task ends with `npm test`, `npm run lint`, `npm run build` passing. Mark a 
   Files: `src/components/dialogs/SettingsDialog.tsx`, `src/components/Toolbar/Toolbar.tsx` or header, `src/App.tsx`.
   Accept: changing mistake mode updates the current game display immediately; theme override persists across reload; "Fill candidates" works and increments hints; reset stats clears the stats table.
 
-- [ ] **25. Live announcements and a11y pass.**
+- [x] **25. Live announcements and a11y pass.**
   Files: `src/components/LiveRegion.tsx`, `src/store/gameStore.ts`, components as needed.
   Accept: VoiceOver reads cell labels while arrowing and announces conflict/hint/win; whole game playable with keyboard only; axe DevTools shows no serious issues; reduced motion disables animations.
 

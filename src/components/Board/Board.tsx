@@ -13,9 +13,9 @@ function Board() {
   const selected = useGameStore((s) => s.game?.selected ?? null)
 
   useEffect(() => {
-    if (selected === null) return
+    if (selected === null || paused) return
     ref.current?.querySelector<HTMLElement>(`[data-index="${selected}"]`)?.focus()
-  }, [selected])
+  }, [selected, paused])
 
   return (
     <div className={styles.wrap}>

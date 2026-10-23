@@ -2,6 +2,7 @@ import { useState } from 'react'
 import NewGameDialog from './components/dialogs/NewGameDialog.tsx'
 import ResultDialog from './components/dialogs/ResultDialog.tsx'
 import SettingsDialog from './components/dialogs/SettingsDialog.tsx'
+import LiveRegion from './components/LiveRegion.tsx'
 import Board from './components/Board/Board.tsx'
 import NumberPad from './components/NumberPad/NumberPad.tsx'
 import StatusBar from './components/StatusBar/StatusBar.tsx'
@@ -41,6 +42,7 @@ function App() {
         {hasGame && <Toolbar />}
         {hasGame && <NumberPad />}
       </div>
+      <LiveRegion />
       <ResultDialog suppressed={newGameOpen} onNewGame={() => setNewGameOpen(true)} />
       <SettingsDialog open={settingsOpen} onClose={() => setSettingsOpen(false)} />
       <NewGameDialog open={newGameOpen} dismissible={hasGame} onClose={() => setNewGameOpen(false)} />
