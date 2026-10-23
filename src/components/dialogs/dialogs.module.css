@@ -93,3 +93,39 @@
   margin: 0;
   font-variant-numeric: tabular-nums;
 }
+
+.fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 0 0 8px;
+  padding: 0;
+  border: 0;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  text-transform: capitalize;
+}
+
+.statsTable {
+  width: 100%;
+  margin-top: 12px;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.statsTable caption {
+  margin-bottom: 4px;
+  text-align: left;
+  font-weight: 600;
+}
+
+.statsTable th:first-child {
+  text-align: left;
+  text-transform: capitalize;
+}

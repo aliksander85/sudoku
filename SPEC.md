@@ -527,7 +527,7 @@ Each task ends with `npm test`, `npm run lint`, `npm run build` passing. Mark a 
   Files: `src/components/dialogs/ResultDialog.tsx`, `src/App.tsx`, `src/components/dialogs/ResultDialog.test.tsx`.
   Accept: test — finishing a near-complete fixture game shows time/mistakes/hints; manual — 3rd mistake in limit mode shows Lost with working Restart; best time updates.
 
-- [ ] **24. Settings dialog.**
+- [x] **24. Settings dialog.**
   Files: `src/components/dialogs/SettingsDialog.tsx`, `src/components/Toolbar/Toolbar.tsx` or header, `src/App.tsx`.
   Accept: changing mistake mode updates the current game display immediately; theme override persists across reload; "Fill candidates" works and increments hints; reset stats clears the stats table.
 

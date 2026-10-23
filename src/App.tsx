@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import NewGameDialog from './components/dialogs/NewGameDialog.tsx'
 import ResultDialog from './components/dialogs/ResultDialog.tsx'
+import SettingsDialog from './components/dialogs/SettingsDialog.tsx'
 import Board from './components/Board/Board.tsx'
 import NumberPad from './components/NumberPad/NumberPad.tsx'
 import StatusBar from './components/StatusBar/StatusBar.tsx'
@@ -19,6 +20,7 @@ function App() {
   useAutoPause()
   const hasGame = useGameStore((s) => s.game !== null)
   const [newGameOpen, setNewGameOpen] = useState(!hasGame)
+  const [settingsOpen, setSettingsOpen] = useState(false)
 
   return (
     <div className={styles.app}>
@@ -27,6 +29,9 @@ function App() {
           <h1>Sudoku</h1>
           <button type="button" onClick={() => setNewGameOpen(true)}>
             New
+          </button>
+          <button type="button" onClick={() => setSettingsOpen(true)}>
+            Settings
           </button>
           {hasGame && <StatusBar />}
         </header>
@@ -37,6 +42,7 @@ function App() {
         {hasGame && <NumberPad />}
       </div>
       <ResultDialog suppressed={newGameOpen} onNewGame={() => setNewGameOpen(true)} />
+      <SettingsDialog open={settingsOpen} onClose={() => setSettingsOpen(false)} />
       <NewGameDialog open={newGameOpen} dismissible={hasGame} onClose={() => setNewGameOpen(false)} />
     </div>
   )
