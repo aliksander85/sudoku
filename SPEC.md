@@ -511,7 +511,7 @@ Each task ends with `npm test`, `npm run lint`, `npm run build` passing. Mark a 
   Files: `src/components/NumberPad/*`, `src/components/Toolbar/*`, tests, `src/App.tsx`.
   Accept: test — select cell, click pad `5` → cell shows 5; notes toggle changes pad behavior; undo button restores; pad digit disabled per the *Number pad availability* rule in §3.7.
 
-- [ ] **20. Keyboard.**
+- [x] **20. Keyboard.**
   Files: `src/hooks/useKeyboard.ts`, `src/hooks/useKeyboard.test.tsx`, `src/App.tsx`.
   Accept: test — every shortcut in the §6.4 table dispatches the right action; Shift+Digit1 toggles note 1; keys are ignored while a dialog is open; focus follows selection.
 

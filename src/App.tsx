@@ -2,12 +2,14 @@ import { useEffect } from 'react'
 import Board from './components/Board/Board.tsx'
 import NumberPad from './components/NumberPad/NumberPad.tsx'
 import Toolbar from './components/Toolbar/Toolbar.tsx'
+import { useKeyboard } from './hooks/useKeyboard.ts'
 import { useTheme } from './hooks/useTheme.ts'
 import { useGameStore } from './store/index.ts'
 import styles from './App.module.css'
 
 function App() {
   useTheme()
+  useKeyboard()
   const hasGame = useGameStore((s) => s.game !== null)
   const startNewGame = useGameStore((s) => s.startNewGame)
 
