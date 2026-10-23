@@ -2,6 +2,7 @@ import { useState } from 'react'
 import NewGameDialog from './components/dialogs/NewGameDialog.tsx'
 import ResultDialog from './components/dialogs/ResultDialog.tsx'
 import SettingsDialog from './components/dialogs/SettingsDialog.tsx'
+import ShortcutsDialog from './components/dialogs/ShortcutsDialog.tsx'
 import LiveRegion from './components/LiveRegion.tsx'
 import Board from './components/Board/Board.tsx'
 import NumberPad from './components/NumberPad/NumberPad.tsx'
@@ -16,7 +17,8 @@ import styles from './App.module.css'
 
 function App() {
   useTheme()
-  useKeyboard()
+  const [shortcutsOpen, setShortcutsOpen] = useState(false)
+  useKeyboard(() => setShortcutsOpen(true))
   useTimer()
   useAutoPause()
   const hasGame = useGameStore((s) => s.game !== null)
@@ -34,6 +36,14 @@ function App() {
           <button type="button" onClick={() => setSettingsOpen(true)}>
             Settings
           </button>
+          <button
+            type="button"
+            aria-label="Keyboard shortcuts"
+            title="Keyboard shortcuts (?)"
+            onClick={() => setShortcutsOpen(true)}
+          >
+            ?
+          </button>
           {hasGame && <StatusBar />}
         </header>
         <div className={styles.board}>{hasGame && <Board />}</div>
@@ -45,6 +55,7 @@ function App() {
       <LiveRegion />
       <ResultDialog suppressed={newGameOpen} onNewGame={() => setNewGameOpen(true)} />
       <SettingsDialog open={settingsOpen} onClose={() => setSettingsOpen(false)} />
+      <ShortcutsDialog open={shortcutsOpen} onClose={() => setShortcutsOpen(false)} />
       <NewGameDialog open={newGameOpen} dismissible={hasGame} onClose={() => setNewGameOpen(false)} />
     </div>
   )

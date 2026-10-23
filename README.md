@@ -33,6 +33,7 @@ Built with React 19, TypeScript, Zustand and Vite.
 | `P` | Pause / resume |
 | `Ctrl/Cmd` + `Z` | Undo |
 | `Ctrl/Cmd` + `Shift` + `Z`, `Ctrl` + `Y` | Redo |
+| `?` | Show keyboard shortcuts (also the `?` button in the header) |
 | `Esc` | Close dialog |
 
 Shortcuts use physical key codes, so they work on any keyboard layout.

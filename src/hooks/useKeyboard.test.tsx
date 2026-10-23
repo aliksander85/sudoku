@@ -17,8 +17,8 @@ const puzzle = {
   solution: parseGrid(EASY.solution),
 }
 
-function Harness() {
-  useKeyboard()
+function Harness({ onShowShortcuts }: { onShowShortcuts?: () => void }) {
+  useKeyboard(onShowShortcuts)
   return <Board />
 }
 
@@ -88,6 +88,25 @@ describe('useKeyboard', () => {
     await userEvent.keyboard('5{ArrowUp}h')
     expect(dispatch).not.toHaveBeenCalled()
     expect(hint).not.toHaveBeenCalled()
+    dialog.remove()
+  })
+
+  it('? shows shortcuts without dispatching', () => {
+    const show = vi.fn()
+    render(<Harness onShowShortcuts={show} />)
+    fireEvent.keyDown(document.body, { code: 'Slash', key: '?', shiftKey: true })
+    expect(show).toHaveBeenCalledTimes(1)
+    expect(dispatch).not.toHaveBeenCalled()
+  })
+
+  it('? is ignored while a dialog is open', () => {
+    const dialog = document.createElement('dialog')
+    dialog.setAttribute('open', '')
+    document.body.append(dialog)
+    const show = vi.fn()
+    render(<Harness onShowShortcuts={show} />)
+    fireEvent.keyDown(document.body, { code: 'Slash', key: '?', shiftKey: true })
+    expect(show).not.toHaveBeenCalled()
     dialog.remove()
   })
 

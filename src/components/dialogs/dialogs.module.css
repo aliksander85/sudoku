@@ -124,3 +124,49 @@
   text-align: left;
   text-transform: capitalize;
 }
+
+.shortcuts {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.shortcuts th,
+.shortcuts td {
+  padding: 6px 0;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--border);
+}
+
+.shortcuts th {
+  padding-right: 12px;
+  font-weight: normal;
+}
+
+.shortcuts tr:last-child > * {
+  border-bottom: 0;
+}
+
+.combo {
+  display: inline-block;
+  line-height: 1.8;
+  white-space: pre;
+}
+
+.shortcuts kbd {
+  min-width: 1.5em;
+  padding: 1px 6px;
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  font-family: ui-monospace, monospace;
+  font-size: 0.8125rem;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.note {
+  margin: 12px 0 0;
+  color: var(--text-muted, inherit);
+  font-size: 0.875rem;
+}
