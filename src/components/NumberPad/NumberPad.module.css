@@ -1,20 +1,24 @@
 .pad {
   display: grid;
   grid-template-columns: repeat(9, 1fr);
-  gap: 4px;
+  gap: 0;
 }
 
+/* No grid gap: buttons are 1/9 of the board (≥ 32px at 320px, §6.3); the bg-colored border is the visual gap */
 .button {
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-width: 0;
   min-height: 52px;
   padding: 4px 0;
   color: var(--accent-contrast);
   background: var(--accent);
-  border: 2px solid var(--accent);
+  background-clip: padding-box;
+  border: 2px solid var(--bg);
   border-radius: 8px;
   cursor: pointer;
+  touch-action: manipulation;
 }
 
 .button:focus-visible {
@@ -40,15 +44,22 @@
 .pad[data-notes='true'] .button {
   color: var(--accent);
   background: var(--surface);
+  box-shadow: inset 0 0 0 2px var(--accent);
 }
 
-@media (min-width: 900px) and (orientation: landscape) {
+@media ((min-width: 900px) and (orientation: landscape)), ((orientation: landscape) and (max-height: 500px)) {
   .pad {
     grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
+    gap: 4px;
   }
 
   .button {
     min-height: 72px;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .button {
+    min-height: 52px;
   }
 }

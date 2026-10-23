@@ -4,9 +4,11 @@
 }
 
 .toolbar button {
-  flex: 1;
+  flex: 1 0 auto;
   min-height: 44px;
+  touch-action: manipulation;
   padding: 0 8px;
+  white-space: nowrap;
   color: var(--text);
   background: var(--surface);
   border: 1px solid var(--border);

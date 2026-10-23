@@ -4,7 +4,7 @@
   flex-direction: column;
   gap: 12px;
   width: 100%;
-  max-width: 100%;
+  max-width: calc(560px + 2 * var(--gutter));
   margin: 0 auto;
   padding: 12px var(--gutter);
 }
@@ -16,9 +16,37 @@
   min-width: 0;
 }
 
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
 .header h1 {
-  margin: 0;
+  margin: 0 auto 0 0;
   font-size: 1.25rem;
+}
+
+.header button {
+  min-height: 44px;
+  padding: 0 16px;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.header button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.header > :not(h1):not(button) {
+  flex-basis: 100%;
 }
 
 .board {
@@ -36,8 +64,10 @@
   min-width: 0;
 }
 
-@media (min-width: 900px) and (orientation: landscape) {
+/* Wide landscape, or a landscape phone (too short for the stacked layout) */
+@media ((min-width: 900px) and (orientation: landscape)), ((orientation: landscape) and (max-height: 500px)) {
   .app {
+    max-width: none;
     display: grid;
     grid-template-columns: auto minmax(240px, 320px);
     justify-content: center;
@@ -51,5 +81,11 @@
 
   .controls {
     padding-top: 56px;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .controls {
+    padding-top: 0;
   }
 }

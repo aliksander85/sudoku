@@ -282,6 +282,7 @@ Portrait (default)                  Landscape (≥ 900px wide and wider than tal
 │ [1][2][3][4][5][6][7][8][9] │
 └─────────────────────────────┘
 ```
+- Landscape phones (landscape and ≤ 500px tall) also use the two-column layout, since the stacked layout leaves no room for the board and controls.
 - Board: CSS Grid, square, size `min(100vw - 32px, 100dvh - <header + controls>, 560px)`; 16 px side gutter; thicker borders between boxes. Font sizes in container-query units (`cqi`) so they scale with the board.
 - Cell: value centered; notes as a 3×3 mini-grid of small digits.
 - Number pad: each button shows the digit and remaining count (per the *Number pad availability* rule in §3.7); disabled at 0 remaining. In notes mode, the pad looks visibly different (outlined digits).
@@ -535,7 +536,7 @@ Each task ends with `npm test`, `npm run lint`, `npm run build` passing. Mark a 
   Files: `src/components/LiveRegion.tsx`, `src/store/gameStore.ts`, components as needed.
   Accept: VoiceOver reads cell labels while arrowing and announces conflict/hint/win; whole game playable with keyboard only; axe DevTools shows no serious issues; reduced motion disables animations.
 
-- [ ] **26. Responsive and final QA.**
+- [x] **26. Responsive and final QA.**
   Files: CSS modules as needed, `CLAUDE.md` (update "Project state").
   Accept, manually at 320×568, 390×844, 768×1024, 1280×800 and landscape phone:
   - no horizontal scroll; board stays square;

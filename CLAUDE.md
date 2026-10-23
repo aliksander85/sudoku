@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project state
 
-A Sudoku app in its earliest stage: the repo is still the stock Vite `react-ts` template (`src/App.tsx` is the template's demo page). No game logic, routing, state library, or test setup exists yet.
+A feature-complete Sudoku app (SPEC.md tasks 1–26): pure game logic, solver and generator (`src/lib`, generation in a Web Worker under `src/workers`), Zustand stores (`src/store`: game, settings, stats, persisted), and the UI (board, number pad, toolbar, status bar, new game / result / settings dialogs, live region), with Vitest tests next to the code. No routing.
+
+Layout is CSS modules per component plus `src/styles/{global,theme}.css` (light/dark tokens). Portrait is the default; two columns apply at ≥ 900px landscape and also on short landscape viewports (≤ 500px tall, i.e. landscape phones — a deviation from SPEC §6.1's 900px rule). Touch targets are ≥ 44px tall except board cells (inherent to 9×9 at 320px).
 
 See SPEC.md for requirements and the task list.
 
