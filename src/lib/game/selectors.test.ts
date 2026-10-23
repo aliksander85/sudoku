@@ -61,14 +61,8 @@ describe('cellFlags', () => {
     expect(has(g, 3, 'sameDigit')).toBe(false)
   })
 
-  it('marks wrong user digits in check/limit but not off, never givens/hinted', () => {
-    const patch = { 2: { value: 9 as const } }
-    expect(has(game('check', patch), 2, 'wrong')).toBe(true)
-    expect(has(game('limit', patch), 2, 'wrong')).toBe(true)
-    expect(has(game('off', patch), 2, 'wrong')).toBe(false)
-    expect(has(game('check', { 2: { value: 9, hinted: true } }), 2, 'wrong')).toBe(false)
-    expect(has(game(), 0, 'wrong')).toBe(false)
-    expect(has(game('check', { 2: { value: 4 } }), 2, 'wrong')).toBe(false)
+  it('does not flag a wrong user digit that has no conflict', () => {
+    expect(cellFlags(game('check', { 2: { value: 2 } }), 2)).toBe(0)
   })
 
   it('marks conflict independent of mistake mode', () => {
@@ -121,13 +115,13 @@ describe('cellLabel', () => {
     expect(cellLabel(game('check', { 2: { notes } }), 2)).toBe('Row 1, column 3, empty, notes 1 4 9')
   })
 
-  it('labels user, hinted, wrong and conflicting digits', () => {
+  it('labels user, hinted and conflicting digits, never wrongness', () => {
     expect(cellLabel(game('check', { 2: { value: 4 } }), 2)).toBe('Row 1, column 3, 4')
     expect(cellLabel(game('check', { 2: { value: 4, hinted: true } }), 2)).toBe(
       'Row 1, column 3, 4, hinted',
     )
-    expect(cellLabel(game('check', { 2: { value: 2 } }), 2)).toBe('Row 1, column 3, 2, wrong')
+    expect(cellLabel(game('check', { 2: { value: 2 } }), 2)).toBe('Row 1, column 3, 2')
     expect(cellLabel(game('off', { 2: { value: 5 } }), 2)).toBe('Row 1, column 3, 5, conflict')
-    expect(cellLabel(game('check', { 2: { value: 5 } }), 2)).toBe('Row 1, column 3, 5, wrong, conflict')
+    expect(cellLabel(game('check', { 2: { value: 5 } }), 2)).toBe('Row 1, column 3, 5, conflict')
   })
 })

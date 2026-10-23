@@ -88,13 +88,12 @@ describe('Cell visual states', () => {
     expect(flagged('data-same-digit').length).toBeGreaterThan(0)
   })
 
-  it('marks conflicts on both cells and wrong digits', () => {
+  it('marks conflicts on both cells', () => {
     const game = createGame(puzzle, 'check')
     const given = puzzle.givens.findIndex((v) => v !== 0)
     game.cells[emptyIndex] = { ...game.cells[emptyIndex], value: puzzle.givens[given] }
     useGameStore.setState({ game })
     render(<Board />)
-    expect(cellAt(emptyIndex).getAttribute('data-wrong')).toBe('true')
     expect(cellAt(emptyIndex).getAttribute('data-conflict')).toBe('true')
     expect(flagged('data-conflict').length).toBeGreaterThanOrEqual(2)
   })

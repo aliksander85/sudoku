@@ -18,24 +18,19 @@ const start = (mode: MistakeMode = 'check'): GameState => ({ ...createGame(puzzl
 const step = (state: GameState, action: GameAction) => announce(state, reducer(state, action))
 
 describe('announce', () => {
-  it('announces a wrong digit with its position', () => {
-    expect(step(start(), { type: 'input', digit: 1 })).toBe('Wrong digit at row 1, column 3')
+  it('does not reveal a wrong digit', () => {
+    for (const mode of ['check', 'limit'] as const) {
+      const state = start(mode)
+      const next = reducer(state, { type: 'input', digit: 1 })
+      expect(next.mistakes).toBe(1)
+      expect(announce(state, next)).toBeNull()
+    }
   })
 
-  it('adds the mistake count in limit mode', () => {
-    expect(step(start('limit'), { type: 'input', digit: 1 })).toBe(
-      'Wrong digit at row 1, column 3. Mistake 1 of 3',
-    )
-  })
-
-  it('announces a conflict, together with the wrong digit', () => {
-    expect(step(start(), { type: 'input', digit: 5 })).toBe(
-      'Wrong digit at row 1, column 3. Conflict at row 1, column 3',
-    )
-  })
-
-  it('announces only the conflict when mistakes are off', () => {
-    expect(step(start('off'), { type: 'input', digit: 5 })).toBe('Conflict at row 1, column 3')
+  it('announces a conflict in every mode', () => {
+    for (const mode of ['off', 'check', 'limit'] as const) {
+      expect(step(start(mode), { type: 'input', digit: 5 })).toBe('Conflict at row 1, column 3')
+    }
   })
 
   it('says nothing for a correct digit, notes, or selection', () => {

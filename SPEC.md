@@ -62,7 +62,7 @@ A filled cell is in conflict if any peer holds the same digit. Conflicts are alw
 
 A user digit that differs from the solution.
 - `off`: mistakes are neither shown nor counted.
-- `check`: wrong digits are shown; each placement of a wrong digit increments `mistakes`.
+- `check`: wrong digits are not highlighted on the board (only conflicts are); each placement of a wrong digit increments `mistakes`.
 - `limit`: as `check`; when `mistakes` reaches 3 the game becomes `lost`.
 - Wrong digits stay on the board until the player changes or erases them.
 - Changing mistake mode mid-game keeps the current count; the loss check runs only when a new mistake is made.
@@ -87,7 +87,7 @@ Every cell's value equals the solution → status `won`. (With a unique solution
 - *Auto-candidates*: every empty user cell gets notes = digits not present among its peers' current values (wrong digits included). Overwrites existing notes. `hintsUsed += 1`. One undo step. No-op if there are no empty cells.
 - *Undo/redo*: steps through board changes only. Never changes `mistakes`, `hintsUsed`, timer or status. A new board change clears the redo stack.
 - *Move selection*: arrows wrap at edges (moving right from col 8 goes to col 0, same row). With no selection, any move selects cell 0.
-- *Number pad availability*: a digit is disabled when 9 instances of it are "placed". In `off` mode every cell holding the digit counts (no information about correctness leaks). In `check`/`limit` only givens, hinted cells and correct user digits count — wrong digits are already marked and must not block entering the correct one.
+- *Number pad availability*: a digit is disabled when 9 instances of it are "placed". In `off` mode every cell holding the digit counts (no information about correctness leaks). In `check`/`limit` only givens, hinted cells and correct user digits count — wrong digits must not block entering the correct one.
 
 ### 3.8 Timer
 
@@ -294,9 +294,9 @@ Portrait (default)                  Landscape (≥ 900px wide and wider than tal
 
 ### 6.2 Cell visual states
 
-Priority high → low: selected > conflict/wrong > same digit as selected > peer of selected > default.
+Priority high → low: selected > conflict > same digit as selected > peer of selected > default.
 - Given: normal-weight text color. User: accent color. Hinted: accent with dotted underline.
-- Wrong (check/limit): error color + solid underline. Conflict: error-tinted background + error color text.
+- Conflict: error-tinted background + error color text.
 
 ### 6.3 Mouse and touch
 
@@ -322,8 +322,8 @@ Global `keydown` on `document`; ignored while a dialog is open; uses `event.code
 ### 6.5 Accessibility
 
 - Board `role="grid"` with 9 `role="row"` and 81 `role="gridcell"`. Roving tabindex: the selected cell (or cell 0) has `tabIndex=0`, focus follows selection, `aria-selected` on the selected cell.
-- `aria-label` per cell: `"Row 3, column 5, 7, given"`, `"Row 3, column 5, empty, notes 1 4 9"`, `"…, 4, wrong"`, `"…, conflict"`.
-- An `aria-live="polite"` region announces conflicts, wrong digits, hint results, pause and win/loss.
+- `aria-label` per cell: `"Row 3, column 5, 7, given"`, `"Row 3, column 5, empty, notes 1 4 9"`, `"…, conflict"` (wrong digits are not labelled).
+- An `aria-live="polite"` region announces conflicts, hint results, pause and win/loss.
 - Errors are never shown by color alone (underline / background + label). Text and states meet WCAG AA contrast in both themes.
 - `prefers-reduced-motion`: no animations (win animation and transitions off).
 
@@ -423,7 +423,7 @@ Few, high value:
 - Click cell + pad input.
 - Keyboard navigation and input; Shift+digit note.
 - Undo/redo via keys.
-- Conflict and wrong-digit labels.
+- Conflict labels.
 - Winning a near-complete fixture game shows the result dialog.
 
 ### 8.6 Not tested automatically in MVP
@@ -486,7 +486,7 @@ Each task ends with `npm test`, `npm run lint`, `npm run build` passing. Mark a 
 
 - [x] **13. Selectors, format, settings, stats.** `cellFlags`, memoized `getConflicts`, `remainingDigits`, `cellLabel`, `formatTime`, `DEFAULT_SETTINGS`, `recordStart/recordWin`.
   Files: `src/lib/game/selectors.ts`, `src/lib/format.ts`, `src/lib/settings.ts`, `src/lib/stats.ts`, tests.
-  Accept: flags correct for selected/peer/same-digit/conflict/wrong (wrong hidden in `off`); `getConflicts` returns the same array for the same `cells` ref; `remainingDigits` follows the *Number pad availability* rule in §3.7 in every mode; labels match the formats in §6.5; `formatTime(65_000) === '01:05'`, `formatTime(3_725_000) === '1:02:05'`; best/average time updated correctly.
+  Accept: flags correct for selected/peer/same-digit/conflict (no wrong-digit flag); `getConflicts` returns the same array for the same `cells` ref; `remainingDigits` follows the *Number pad availability* rule in §3.7 in every mode; labels match the formats in §6.5; `formatTime(65_000) === '01:05'`, `formatTime(3_725_000) === '1:02:05'`; best/average time updated correctly.
 
 - [x] **14. Stores.** Install `zustand`. Game, settings and stats stores with `persist` (keys/versions per §4.3); `startNewGame` calls an injectable generator; stats updated on status transitions.
   Files: `src/store/*.ts`, `src/store/gameStore.test.ts`, `package.json`.

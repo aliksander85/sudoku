@@ -22,7 +22,6 @@ function Cell({ index }: { index: number }) {
       data-peer={(flags & CELL_FLAG.peer) !== 0}
       data-same-digit={(flags & CELL_FLAG.sameDigit) !== 0}
       data-conflict={(flags & CELL_FLAG.conflict) !== 0}
-      data-wrong={(flags & CELL_FLAG.wrong) !== 0}
       aria-selected={(flags & CELL_FLAG.selected) !== 0}
       aria-label={paused ? `Row ${Math.floor(index / 9) + 1}, column ${(index % 9) + 1}` : label}
       tabIndex={isTabStop ? 0 : -1}

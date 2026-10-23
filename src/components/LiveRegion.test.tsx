@@ -18,12 +18,12 @@ const puzzle = {
 afterEach(cleanup)
 
 describe('LiveRegion', () => {
-  it('is a polite status region and announces a wrong digit', () => {
+  it('is a polite status region and announces a conflict', () => {
     useGameStore.setState({ game: { ...createGame(puzzle, 'check'), selected: 2 } })
     render(<LiveRegion />)
     const region = screen.getByRole('status')
     expect(region.getAttribute('aria-live')).toBe('polite')
-    act(() => useGameStore.getState().dispatch({ type: 'input', digit: 1 }))
-    expect(region.textContent).toBe('Wrong digit at row 1, column 3')
+    act(() => useGameStore.getState().dispatch({ type: 'input', digit: 5 }))
+    expect(region.textContent).toBe('Conflict at row 1, column 3')
   })
 })

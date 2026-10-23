@@ -66,11 +66,6 @@
   color: var(--wrong);
 }
 
-.cell[data-wrong='true'] .value {
-  color: var(--wrong);
-  text-decoration: underline solid;
-}
-
 .notes {
   display: grid;
   grid-template: repeat(3, 1fr) / repeat(3, 1fr);

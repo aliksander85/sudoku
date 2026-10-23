@@ -8,6 +8,8 @@ A feature-complete Sudoku app (SPEC.md tasks 1–26): pure game logic, solver an
 
 Layout is CSS modules per component plus `src/styles/{global,theme}.css` (light/dark tokens). Portrait is the default; two columns apply at ≥ 900px landscape and also on short landscape viewports (≤ 500px tall, i.e. landscape phones — a deviation from SPEC §6.1's 900px rule). Touch targets are ≥ 44px tall except board cells (inherent to 9×9 at 320px).
 
+Wrong digits (vs the solution) are counted in `check`/`limit` mode but never highlighted, labelled or announced; only rule conflicts are shown.
+
 See SPEC.md for requirements and the task list.
 
 ## Commands

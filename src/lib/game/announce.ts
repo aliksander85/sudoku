@@ -1,7 +1,6 @@
 import { formatTime } from '../format.ts'
 import { colOf, rowOf } from '../grid.ts'
 import type { GameState } from '../types.ts'
-import { MISTAKE_LIMIT } from './reducer.ts'
 import { getConflicts } from './selectors.ts'
 
 const where = (index: number): string => `row ${rowOf(index) + 1}, column ${colOf(index) + 1}`
@@ -26,13 +25,7 @@ export function announce(prev: GameState, next: GameState): string | null {
     return i === undefined ? null : `Hint: ${where(i)}, ${next.cells[i].value}`
   }
 
-  const messages: string[] = []
-  if (next.mistakes > prev.mistakes && changed.length > 0) {
-    const limit = next.mistakeMode === 'limit' ? `. Mistake ${next.mistakes} of ${MISTAKE_LIMIT}` : ''
-    messages.push(`Wrong digit at ${where(changed[0])}${limit}`)
-  }
   const conflicts = getConflicts(next.cells)
   const clash = changed.find((i) => conflicts[i])
-  if (clash !== undefined) messages.push(`Conflict at ${where(clash)}`)
-  return messages.length > 0 ? messages.join('. ') : null
+  return clash === undefined ? null : `Conflict at ${where(clash)}`
 }
