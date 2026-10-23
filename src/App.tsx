@@ -1,4 +1,5 @@
-import { useEffect } from 'react'
+import { useState } from 'react'
+import NewGameDialog from './components/dialogs/NewGameDialog.tsx'
 import Board from './components/Board/Board.tsx'
 import NumberPad from './components/NumberPad/NumberPad.tsx'
 import StatusBar from './components/StatusBar/StatusBar.tsx'
@@ -16,18 +17,16 @@ function App() {
   useTimer()
   useAutoPause()
   const hasGame = useGameStore((s) => s.game !== null)
-  const startNewGame = useGameStore((s) => s.startNewGame)
-
-  // Temporary until the New game dialog exists
-  useEffect(() => {
-    if (!hasGame) void startNewGame('medium')
-  }, [hasGame, startNewGame])
+  const [newGameOpen, setNewGameOpen] = useState(!hasGame)
 
   return (
     <div className={styles.app}>
       <main className={styles.main}>
         <header className={styles.header}>
           <h1>Sudoku</h1>
+          <button type="button" onClick={() => setNewGameOpen(true)}>
+            New
+          </button>
           {hasGame && <StatusBar />}
         </header>
         <div className={styles.board}>{hasGame && <Board />}</div>
@@ -36,6 +35,7 @@ function App() {
         {hasGame && <Toolbar />}
         {hasGame && <NumberPad />}
       </div>
+      <NewGameDialog open={newGameOpen} dismissible={hasGame} onClose={() => setNewGameOpen(false)} />
     </div>
   )
 }

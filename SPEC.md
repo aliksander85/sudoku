@@ -519,7 +519,7 @@ Each task ends with `npm test`, `npm run lint`, `npm run build` passing. Mark a 
   Files: `src/components/StatusBar/*`, `src/hooks/useTimer.ts`, `src/hooks/useAutoPause.ts`, `src/components/Board/*` (paused overlay), `src/App.tsx`.
   Accept: manual — timer advances only while playing; switching tabs pauses and returns resumes; user pause persists across tab switch; digits hidden while paused; mistakes display per mode; `showTimer=false` hides timer.
 
-- [ ] **22. New game dialog and flow.**
+- [x] **22. New game dialog and flow.**
   Files: `src/components/dialogs/Dialog.tsx`, `NewGameDialog.tsx`, `dialogs.module.css`, `src/App.tsx`.
   Accept: first load without a saved game opens the dialog; confirmation shown only for an in-progress game; spinner while generating; reload mid-game resumes the same board, notes, time and history.
 
