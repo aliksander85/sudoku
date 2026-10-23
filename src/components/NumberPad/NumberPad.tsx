@@ -22,11 +22,10 @@ function NumberPad() {
           type="button"
           className={styles.button}
           disabled={frozen || remaining[d] === 0}
-          aria-label={`${d}, ${remaining[d]} remaining`}
+          aria-label={String(d)}
           onClick={() => dispatch({ type: 'input', digit: d })}
         >
           <span className={styles.digit}>{d}</span>
-          <span className={styles.count}>{remaining[d]}</span>
         </button>
       ))}
     </div>

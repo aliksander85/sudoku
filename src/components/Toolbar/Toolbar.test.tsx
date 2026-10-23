@@ -40,7 +40,7 @@ describe('Toolbar', () => {
     expect(button('Undo').disabled).toBe(true)
     expect(button('Redo').disabled).toBe(true)
     await userEvent.click(screen.getAllByRole('gridcell')[emptyIndex])
-    await userEvent.click(screen.getByRole('button', { name: /^5, / }))
+    await userEvent.click(screen.getByRole('button', { name: '5' }))
     expect(value()).toBe(5)
     await userEvent.click(button('Undo'))
     expect(value()).toBe(0)

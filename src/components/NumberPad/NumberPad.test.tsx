@@ -25,7 +25,7 @@ const solutionDigit = puzzle.solution[emptyIndex]
 const cellAt = (index: number) =>
   screen.getAllByRole('gridcell').find((el) => el.getAttribute('data-index') === String(index))!
 
-const padButton = (digit: number) => screen.getByRole('button', { name: new RegExp(`^${digit}, `) })
+const padButton = (digit: number) => screen.getByRole('button', { name: String(digit) })
 
 beforeEach(() => {
   useGameStore.setState({ game: createGame(puzzle, 'check') })
@@ -45,12 +45,6 @@ describe('NumberPad', () => {
     await userEvent.click(padButton(5))
     expect(useGameStore.getState().game!.cells[emptyIndex].value).toBe(5)
     expect(cellAt(emptyIndex).getAttribute('aria-label')).toContain(', 5')
-  })
-
-  it('shows remaining counts', () => {
-    render(<NumberPad />)
-    const given = puzzle.givens.filter((v) => v === 1).length
-    expect(padButton(1).textContent).toBe(`1${9 - given}`)
   })
 
   it('adds a note instead of a value in notes mode', async () => {
