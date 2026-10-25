@@ -80,10 +80,10 @@ Every cell's value equals the solution → status `won`. (With a unique solution
 
 ### 3.7 Actions and edge cases
 
-- *Input digit* (not notes mode): no-op if no selection, cell is given/hinted, or cell already holds that digit. Otherwise set value, clear the cell's notes, remove that digit from the notes of all peers. Counted as a mistake if wrong (per mode). One undo step.
+- *Input digit* (not notes mode): no-op if no selection, cell is given/hinted, or cell already holds that digit. Otherwise set value and clear the cell's notes; peers' notes are left untouched. Counted as a mistake if wrong (per mode). One undo step.
 - *Input in notes mode* / *Shift+digit*: toggle that note. No-op on a filled cell or given/hinted cell.
 - *Erase*: clears value or, if empty, clears all notes. No-op on given/hinted or already-empty-without-notes cells.
-- *Hint*: target = selected cell if it is empty or wrong; otherwise a random empty-or-wrong cell. Sets the solution value, marks `hinted`, clears its notes and that digit from peers' notes. `hintsUsed += 1`. Not a mistake. Undoable (undo does not decrement `hintsUsed`).
+- *Hint*: target = selected cell if it is empty or wrong; otherwise a random empty-or-wrong cell. Sets the solution value, marks `hinted`, clears its notes (peers' notes are left untouched). `hintsUsed += 1`. Not a mistake. Undoable (undo does not decrement `hintsUsed`).
 - *Auto-candidates*: every empty user cell gets notes = digits not present among its peers' current values (wrong digits included). Overwrites existing notes. `hintsUsed += 1`. One undo step. No-op if there are no empty cells.
 - *Undo/redo*: steps through board changes only. Never changes `mistakes`, `hintsUsed`, timer or status. A new board change clears the redo stack.
 - *Move selection*: arrows wrap at edges (moving right from col 8 goes to col 0, same row). With no selection, any move selects cell 0.
@@ -464,7 +464,7 @@ Each task ends with `npm test`, `npm run lint`, `npm run build` passing. Mark a 
   Files: `src/lib/game/createGame.ts`, `src/lib/game/reducer.ts`, `src/lib/game/reducer.test.ts`.
   Accept: `createGame` marks givens, status `ready`; moves wrap on all four edges; move with no selection selects 0; select ignored when paused.
 
-- [x] **8. Input, notes, erase.** `input`, `note`, `erase` with peer note cleanup; first board change moves `ready → playing`.
+- [x] **8. Input, notes, erase.** `input`, `note`, `erase`; first board change moves `ready → playing`.
   Files: `src/lib/game/reducer.ts`, `src/lib/game/reducer.test.ts`.
   Accept: every input/note/erase rule in §3.7; placing a digit removes it from peers' notes; no-ops on givens/hinted cells; unchanged cells keep references.
 
@@ -474,11 +474,11 @@ Each task ends with `npm test`, `npm run lint`, `npm run build` passing. Mark a 
 
 - [x] **10. Undo/redo.** Patch-based history.
   Files: `src/lib/game/history.ts`, `src/lib/game/reducer.ts`, tests.
-  Accept: placing a digit that clears peer notes is undone in one step; undo→redo yields deep-equal state; a new action clears `future`; undo does not change mistakes/hints/timer; undo ignored when won/lost/paused.
+  Accept: placing a digit that clears its own notes is undone in one step; undo→redo yields deep-equal state; a new action clears `future`; undo does not change mistakes/hints/timer; undo ignored when won/lost/paused.
 
 - [x] **11. Hint and auto-candidates.**
   Files: `src/lib/game/reducer.ts`, tests.
-  Accept: hint picks the selected empty/wrong cell, otherwise the cell chosen deterministically from `random`; hinted cells are locked; hint clears peers' notes; auto-candidates fills correct masks, is one undo step and counts as a hint; undo does not decrement `hintsUsed`.
+  Accept: hint picks the selected empty/wrong cell, otherwise the cell chosen deterministically from `random`; hinted cells are locked; hint keeps peers' notes; auto-candidates fills correct masks, is one undo step and counts as a hint; undo does not decrement `hintsUsed`.
 
 - [x] **12. Pause/resume, tick, restart.**
   Files: `src/lib/game/reducer.ts`, tests.

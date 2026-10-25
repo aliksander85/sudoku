@@ -2,7 +2,6 @@ import { describe, it, expect } from 'vitest'
 import { createGame } from './createGame.ts'
 import { reducer } from './reducer.ts'
 import { generatePuzzle } from '../generator.ts'
-import { PEERS } from '../grid.ts'
 import type { Digit, GameAction, GameState } from '../types.ts'
 
 const puzzle = generatePuzzle('easy', 1)
@@ -14,15 +13,14 @@ const run = (state: GameState, ...actions: GameAction[]) => actions.reduce(reduc
 const start = (): GameState => ({ ...createGame(puzzle, 'check'), selected: emptyIdx })
 
 describe('undo/redo', () => {
-  it('undoes a digit and its peer note cleanup in one step', () => {
-    const peer = PEERS[emptyIdx].find((p) => puzzle.givens[p] === 0)!
+  it('undoes a digit and its own note cleanup in one step', () => {
     const base = start()
     const withNote = {
       ...base,
-      cells: base.cells.map((c, k) => (k === peer ? { ...c, notes: 1 << (correct - 1) } : c)),
+      cells: base.cells.map((c, k) => (k === emptyIdx ? { ...c, notes: 1 << (correct - 1) } : c)),
     }
     const placed = run(withNote, { type: 'input', digit: correct })
-    expect(placed.cells[peer].notes).toBe(0)
+    expect(placed.cells[emptyIdx].notes).toBe(0)
     expect(placed.past).toHaveLength(1)
     const undone = run(placed, { type: 'undo' })
     expect(undone.cells).toEqual(withNote.cells)

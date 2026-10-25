@@ -8,7 +8,7 @@ Built with React 19, TypeScript, Zustand and Vite.
 
 - **Fresh puzzles every time** — generated at runtime, seeded and reproducible, with a guaranteed unique solution and 180° rotational symmetry.
 - **Four difficulties** — Easy, Medium, Hard and Expert.
-- **Notes** — a notes mode (or hold `Shift`) for pencil marks; placing a digit clears it from the notes of every cell in its row, column and box.
+- **Notes** — a notes mode (or hold `Shift`) for pencil marks.
 - **Auto-candidates** — fill every empty cell with its possible digits in one click.
 - **Hints** — reveal the selected cell, or a random unsolved one.
 - **Unlimited undo / redo** for the whole game.

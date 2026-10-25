@@ -1,5 +1,4 @@
 import { bit, candidatesFor } from '../candidates.ts'
-import { PEERS } from '../grid.ts'
 import { createGame } from './createGame.ts'
 import { redoStep, undoStep } from './history.ts'
 import type { Cell, CellPatch, CellValue, Digit, Direction, GameAction, GameState, HistoryStep } from '../types.ts'
@@ -59,10 +58,6 @@ function inputDigit(state: GameState, digit: Digit): GameState {
   const i = editable(state)
   if (i === null || state.cells[i].value === digit) return state
   const step: HistoryStep = [patch(state, i, { value: digit, notes: 0 })]
-  for (const peer of PEERS[i]) {
-    const { notes } = state.cells[peer]
-    if (notes & bit(digit)) step.push(patch(state, peer, { notes: notes & ~bit(digit) }))
-  }
   return judge(commit(state, step), i, digit)
 }
 
@@ -97,10 +92,6 @@ function hint(state: GameState, random: number): GameState {
       : targets[Math.min(Math.floor(random * targets.length), targets.length - 1)]
   const digit = solution[i] as Digit
   const step: HistoryStep = [patch(state, i, { value: digit, notes: 0, hinted: true })]
-  for (const peer of PEERS[i]) {
-    const { notes } = state.cells[peer]
-    if (notes & bit(digit)) step.push(patch(state, peer, { notes: notes & ~bit(digit) }))
-  }
   return solved(withHint(commit(state, step)))
 }
 

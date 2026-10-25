@@ -122,7 +122,7 @@ const sel = (patches: Record<number, Partial<Cell>> = {}, index = emptyIdx): Gam
   withCells({ ...fresh(), selected: index }, patches)
 
 describe('input', () => {
-  it('sets the value, clears own notes and peers\' notes of that digit', () => {
+  it('sets the value, clears own notes and keeps peers\' notes', () => {
     const s = sel({
       [emptyIdx]: { notes: 0b111 },
       [peerIdx]: { notes: 0b101 },
@@ -130,12 +130,11 @@ describe('input', () => {
     })
     const next = reducer(s, { type: 'input', digit: 1 })
     expect(next.cells[emptyIdx]).toMatchObject({ value: 1, notes: 0 })
-    expect(next.cells[peerIdx].notes).toBe(0b100)
+    expect(next.cells[peerIdx]).toBe(s.cells[peerIdx])
     expect(next.cells[farIdx]).toBe(s.cells[farIdx])
     expect(next.status).toBe('playing')
     expect(next.past).toHaveLength(1)
-    expect(next.past[0]).toHaveLength(2)
-    expect(next.past[0][1]).toMatchObject({ index: peerIdx, before: s.cells[peerIdx] })
+    expect(next.past[0]).toHaveLength(1)
     expect(next.future).toEqual([])
   })
 
@@ -143,7 +142,7 @@ describe('input', () => {
     const s = sel({ [peerIdx]: { notes: 1 } })
     const next = reducer(s, { type: 'input', digit: 1 })
     s.cells.forEach((c, i) => {
-      if (i !== emptyIdx && i !== peerIdx) expect(next.cells[i]).toBe(c)
+      if (i !== emptyIdx) expect(next.cells[i]).toBe(c)
     })
   })
 
@@ -330,12 +329,13 @@ describe('hint', () => {
     }
   })
 
-  it('clears the digit from peers notes only', () => {
+  it('clears its own notes and keeps peers\' notes', () => {
     const d = solutionAt(emptyIdx)
     const bitD = 1 << (d - 1)
     const s = withCells(at(emptyIdx), { [emptyIdx]: { notes: 3 }, [peerIdx]: { notes: bitD | 2 }, [farIdx]: { notes: bitD } })
     const next = reducer(s, { type: 'hint', random: 0 })
-    expect(next.cells[peerIdx].notes).toBe(2)
+    expect(next.cells[emptyIdx].notes).toBe(0)
+    expect(next.cells[peerIdx]).toBe(s.cells[peerIdx])
     expect(next.cells[farIdx]).toBe(s.cells[farIdx])
   })
 
@@ -354,7 +354,7 @@ describe('hint', () => {
   })
 
   it('is undoable without decrementing hintsUsed, and redoable', () => {
-    const s = withCells(at(emptyIdx), { [peerIdx]: { notes: 1 << (solutionAt(emptyIdx) - 1) } })
+    const s = withCells(at(emptyIdx), { [emptyIdx]: { notes: 1 << (solutionAt(emptyIdx) - 1) } })
     const hinted = reducer(s, { type: 'hint', random: 0 })
     const undone = reducer(hinted, { type: 'undo' })
     expect(undone.cells).toEqual(s.cells)
