@@ -30,9 +30,18 @@ function Dialog({ open, onClose, title, dismissible = true, children }: Props) {
         if (dismissible) onClose()
       }}
       onClick={(e) => {
-        if (dismissible && e.target === e.currentTarget) onClose()
+        if (!dismissible || e.target !== e.currentTarget) return
+        // The dialog box is padded, so only clicks outside its rect hit the backdrop
+        const r = e.currentTarget.getBoundingClientRect()
+        const inside = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom
+        if (!inside) onClose()
       }}
     >
+      {dismissible && (
+        <button type="button" className={styles.close} aria-label="Close dialog" onClick={onClose}>
+          ×
+        </button>
+      )}
       <h2 id={titleId} className={styles.title}>
         {title}
       </h2>

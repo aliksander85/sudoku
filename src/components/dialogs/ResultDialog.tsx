@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { formatTime } from '../../lib/format.ts'
 import { useGameStore, useStatsStore } from '../../store/index.ts'
 import Dialog from './Dialog.tsx'
@@ -15,9 +16,13 @@ function ResultDialog({ suppressed, onNewGame }: Props) {
 
   const won = game?.status === 'won'
   const lost = game?.status === 'lost'
+  const finished = won || lost
+
+  const [dismissed, setDismissed] = useState(false)
+  if (dismissed && !finished) setDismissed(false)
 
   return (
-    <Dialog open={(won || lost) && !suppressed} onClose={() => {}} title={won ? 'You won!' : 'Game over'} dismissible={false}>
+    <Dialog open={finished && !dismissed && !suppressed} onClose={() => setDismissed(true)} title={won ? 'You won!' : 'Game over'}>
       {game && won && (
         <dl className={styles.stats}>
           <dt>Time</dt>

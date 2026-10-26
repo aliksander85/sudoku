@@ -27,6 +27,7 @@
 
 .title {
   margin: 0 0 12px;
+  padding-right: 40px;
   font-size: calc(1.25rem * var(--font-scale));
   font-weight: var(--heading-weight);
 }
@@ -63,6 +64,21 @@
 
 .dialog::before {
   inset: 4px;
+}
+
+.dialog .close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  flex: none;
+  width: 44px;
+  padding: 0;
+  font-size: calc(1.5rem * var(--font-scale));
+  line-height: 1;
+}
+
+.dialog .close::before {
+  display: none;
 }
 
 .dialog button:focus-visible {

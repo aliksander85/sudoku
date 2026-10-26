@@ -100,12 +100,25 @@ describe('ResultDialog', () => {
     expect(document.querySelector('dialog')!.hasAttribute('open')).toBe(false)
   })
 
-  it('ignores Esc', () => {
+  it('closes via the X button and reopens for the next finished game', async () => {
+    useGameStore.setState({ game: nearlyDone({ status: 'won' }).game })
+    render(<ResultDialog suppressed={false} onNewGame={() => {}} />)
+    await userEvent.click(button('Close dialog'))
+    expect(document.querySelector('dialog')!.hasAttribute('open')).toBe(false)
+
+    act(() => useGameStore.setState({ game: nearlyDone({ status: 'playing' }).game }))
+    act(() => useGameStore.setState({ game: nearlyDone({ status: 'lost' }).game }))
+    expect(document.querySelector('dialog')!.hasAttribute('open')).toBe(true)
+  })
+
+  it('closes on Esc', () => {
     useGameStore.setState({ game: nearlyDone({ status: 'won' }).game })
     render(<ResultDialog suppressed={false} onNewGame={() => {}} />)
     const cancel = new Event('cancel', { cancelable: true })
-    fireEvent(document.querySelector('dialog')!, cancel)
+    act(() => {
+      fireEvent(document.querySelector('dialog')!, cancel)
+    })
     expect(cancel.defaultPrevented).toBe(true)
-    expect(document.querySelector('dialog')!.hasAttribute('open')).toBe(true)
+    expect(document.querySelector('dialog')!.hasAttribute('open')).toBe(false)
   })
 })
