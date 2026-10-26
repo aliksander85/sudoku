@@ -103,3 +103,9 @@
     padding-top: 0;
   }
 }
+
+@media (hover: none) and (pointer: coarse) {
+  .header .shortcutsButton {
+    display: none;
+  }
+}

@@ -40,6 +40,7 @@ function App() {
           </button>
           <button
             type="button"
+            className={styles.shortcutsButton}
             aria-label="Keyboard shortcuts"
             title="Keyboard shortcuts (?)"
             onClick={() => setShortcutsOpen(true)}
