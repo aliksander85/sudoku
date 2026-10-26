@@ -1,8 +1,11 @@
 .app {
   --gutter: 16px;
+  --board: min(100vw, 100dvh - 340px, 560px);
+  /* Spare height beyond the board's 340px budget widens the gaps, 12px up to 30px */
+  --section-gap: clamp(12px, 12px + (100dvh - 340px - var(--board)) / 2, 30px);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--section-gap);
   width: 100%;
   max-width: calc(560px + 2 * var(--gutter));
   margin: 0 auto;
@@ -65,7 +68,7 @@
 }
 
 .board {
-  width: min(100vw, 100dvh - 340px, 560px);
+  width: var(--board);
   min-width: 200px;
   aspect-ratio: 1;
   align-self: center;
@@ -75,7 +78,7 @@
 .controls {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--section-gap);
   min-width: 0;
 }
 
@@ -97,6 +100,7 @@
   }
 
   .controls {
+    gap: 12px;
     padding-top: 56px;
   }
 }
