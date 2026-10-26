@@ -1,10 +1,10 @@
 .pad {
   display: grid;
-  grid-template-columns: repeat(9, 1fr);
-  gap: 0;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
 }
 
-/* No grid gap: buttons are 1/9 of the board (≥ 32px at 320px, §6.3); the ::before inset is the visual gap */
+/* Two rows of five wide buttons keep touch targets large; the ::before inset adds visual spacing */
 .button {
   position: relative;
   isolation: isolate;
@@ -13,7 +13,7 @@
   align-items: center;
   justify-content: center;
   min-width: 0;
-  min-height: 52px;
+  min-height: 64px;
   padding: 4px 0;
   color: var(--accent-contrast);
   background: transparent;
@@ -26,7 +26,7 @@
 .button::before {
   content: '';
   position: absolute;
-  inset: 2px;
+  inset: 0;
   z-index: -1;
   background: var(--accent);
   border: 2px solid var(--accent);
@@ -55,6 +55,14 @@
   line-height: 1;
 }
 
+.erase::before {
+  background: var(--surface);
+}
+
+.erase {
+  color: var(--accent);
+}
+
 /* Notes mode: outlined digits */
 .pad[data-notes='true'] .button {
   color: var(--accent);
@@ -72,6 +80,10 @@
 
   .button {
     min-height: 72px;
+  }
+
+  .erase {
+    grid-column: span 3;
   }
 }
 

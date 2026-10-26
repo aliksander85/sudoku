@@ -49,14 +49,6 @@ describe('Toolbar', () => {
     expect(value()).toBe(5)
   })
 
-  it('erases the selected cell', async () => {
-    render(<Toolbar />)
-    useGameStore.getState().dispatch({ type: 'select', index: emptyIndex })
-    useGameStore.getState().dispatch({ type: 'input', digit: 5 })
-    await userEvent.click(button('Erase'))
-    expect(value()).toBe(0)
-  })
-
   it('uses a hint', async () => {
     render(<Toolbar />)
     await userEvent.click(button('Hint'))

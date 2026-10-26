@@ -65,9 +65,10 @@
 }
 
 .board {
-  width: min(100vw - 2 * var(--gutter), 100dvh - 280px, 560px);
+  width: min(100vw, 100dvh - 340px, 560px);
   min-width: 200px;
   aspect-ratio: 1;
+  align-self: center;
   background: var(--surface);
 }
 
@@ -90,7 +91,9 @@
   }
 
   .board {
-    width: min(100dvh - 140px, 560px);
+    align-self: auto;
+    /* Leave the full 320px controls column (+ gap and gutters) so the board can't overflow its grid track */
+    width: min(100dvh - 140px, 100vw - 2 * var(--gutter) - 24px - 320px, 560px);
   }
 
   .controls {

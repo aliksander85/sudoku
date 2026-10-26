@@ -19,9 +19,6 @@ function Toolbar() {
       <button type="button" disabled={!canRedo} aria-label="Redo" title="Redo" onClick={() => dispatch({ type: 'redo' })}>
         ↷
       </button>
-      <button type="button" disabled={frozen || paused} aria-label="Erase" title="Delete" onClick={() => dispatch({ type: 'erase' })}>
-        ⌫
-      </button>
       <button
         type="button"
         aria-pressed={notesMode}

@@ -105,4 +105,12 @@ describe('NumberPad', () => {
     render(<NumberPad />)
     expect((padButton(1) as HTMLButtonElement).disabled).toBe(true)
   })
+
+  it('erases the selected cell', async () => {
+    render(<NumberPad />)
+    useGameStore.getState().dispatch({ type: 'select', index: emptyIndex })
+    useGameStore.getState().dispatch({ type: 'input', digit: 5 })
+    await userEvent.click(screen.getByRole('button', { name: 'Erase' }))
+    expect(useGameStore.getState().game!.cells[emptyIndex].value).toBe(0)
+  })
 })

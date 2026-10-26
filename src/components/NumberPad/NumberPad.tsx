@@ -28,6 +28,16 @@ function NumberPad() {
           <span className={styles.digit}>{d}</span>
         </button>
       ))}
+      <button
+        type="button"
+        className={`${styles.button} ${styles.erase}`}
+        disabled={frozen}
+        aria-label="Erase"
+        title="Delete"
+        onClick={() => dispatch({ type: 'erase' })}
+      >
+        <span className={styles.digit}>⌫</span>
+      </button>
     </div>
   )
 }
