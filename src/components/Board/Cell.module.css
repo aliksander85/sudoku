@@ -6,19 +6,32 @@
   min-height: 0;
   color: var(--text);
   background: var(--surface);
-  border: 1px solid var(--border);
   cursor: pointer;
   user-select: none;
   touch-action: manipulation;
   position: relative;
 }
 
-/* Conflicts get a dashed frame so they are not signalled by color alone (§6.5) */
+/* Conflicts get a dashed frame so they are not signalled by color alone (§6.5); a wobbly ring when hand-drawn */
 .cell[data-conflict='true']::after {
   content: '';
   position: absolute;
   inset: 2px;
   border: 2px dashed var(--wrong);
+  border-radius: var(--sketch-blob);
+  filter: var(--sketch-filter);
+  pointer-events: none;
+}
+
+/* Hand-drawn style: selection is a sketched highlighter blob over the cell's background */
+:global(:root[data-style='sketch']) .cell[data-selected='true']::before {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  background: var(--selected);
+  border: 2px solid var(--accent);
+  border-radius: var(--sketch-blob);
+  filter: var(--sketch-filter);
   pointer-events: none;
 }
 
@@ -27,7 +40,7 @@
   outline-offset: -2px;
 }
 
-/* Background priority (low → high): peer, same digit, conflict, selected */
+/* Background priority (low → high): peer, same digit, conflict, selected (plain style only) */
 .cell[data-peer='true'] {
   background: var(--peer);
 }
@@ -40,12 +53,13 @@
   background: var(--conflict);
 }
 
-.cell[data-selected='true'] {
+:global(:root:not([data-style='sketch'])) .cell[data-selected='true'] {
   background: var(--selected);
 }
 
 .value {
-  font-size: 5.5cqi;
+  position: relative;
+  font-size: calc(5.5cqi * var(--font-scale));
   line-height: 1;
 }
 
@@ -67,6 +81,7 @@
 }
 
 .notes {
+  position: relative;
   display: grid;
   grid-template: repeat(3, 1fr) / repeat(3, 1fr);
   width: 100%;
@@ -78,6 +93,6 @@
   align-items: center;
   justify-content: center;
   color: var(--text-muted);
-  font-size: 3cqi;
+  font-size: calc(3cqi * var(--font-scale));
   line-height: 1;
 }

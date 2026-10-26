@@ -25,19 +25,34 @@
 
 .header h1 {
   margin: 0 auto 0 0;
-  font-size: 1.25rem;
+  font-size: calc(1.25rem * var(--font-scale));
+  font-weight: var(--heading-weight);
 }
 
+/* Hand-drawn outline lives on ::before so the sketch filter doesn't blur the label */
 .header button {
+  position: relative;
+  isolation: isolate;
   min-height: 44px;
   padding: 0 16px;
   color: var(--text);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  font-size: 1rem;
+  background: transparent;
+  border: 0;
+  font-size: calc(1rem * var(--font-scale));
   cursor: pointer;
   touch-action: manipulation;
+}
+
+.header button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--surface);
+  border: var(--frame-width) solid var(--frame-color);
+  border-radius: var(--sketch-radius);
+  filter: var(--sketch-filter);
+  pointer-events: none;
 }
 
 .header button:focus-visible {
@@ -54,7 +69,6 @@
   min-width: 200px;
   aspect-ratio: 1;
   background: var(--surface);
-  border: 2px solid var(--border-strong);
 }
 
 .controls {

@@ -4,17 +4,35 @@
 }
 
 .toolbar button {
+  position: relative;
+  isolation: isolate;
   flex: 1 0 auto;
   min-height: 44px;
   touch-action: manipulation;
   padding: 0 8px;
   white-space: nowrap;
   color: var(--text);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  font-size: 1rem;
+  background: transparent;
+  border: 0;
+  font-size: calc(1rem * var(--font-scale));
   cursor: pointer;
+}
+
+/* Hand-drawn outline on ::before so the sketch filter doesn't blur the label */
+.toolbar button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--surface);
+  border: var(--frame-width) solid var(--frame-color);
+  border-radius: var(--sketch-radius);
+  filter: var(--sketch-filter);
+  pointer-events: none;
+}
+
+.toolbar button:nth-child(even)::before {
+  border-radius: var(--sketch-radius-alt);
 }
 
 .toolbar button:focus-visible {
@@ -29,6 +47,9 @@
 
 .toolbar button[aria-pressed='true'] {
   color: var(--accent-contrast);
+}
+
+.toolbar button[aria-pressed='true']::before {
   background: var(--accent);
   border-color: var(--accent);
 }

@@ -71,6 +71,16 @@ describe('persistence', () => {
     expect(b.stats.getState().stats.easy.played).toBe(0)
   })
 
+  it('keeps settings saved before handDrawn existed and defaults it to on', () => {
+    store('sudoku:settings', { settings: { mistakeMode: 'limit', showTimer: false, theme: 'dark' } })
+    expect(setup().settings.getState().settings).toEqual({
+      mistakeMode: 'limit',
+      showTimer: false,
+      theme: 'dark',
+      handDrawn: true,
+    })
+  })
+
   it('uses defaults on corrupted JSON or a wrong shape', () => {
     localStorage.setItem('sudoku:game', '{not json')
     localStorage.setItem('sudoku:settings', '{{{')

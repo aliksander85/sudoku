@@ -31,6 +31,7 @@ export function createSettingsStore({ onMistakeModeChange }: Deps) {
         version: 1,
         partialize: (s: SettingsStore) => ({ settings: s.settings }),
         isValid: isSettings,
+        restore: (persisted) => ({ settings: { ...DEFAULT_SETTINGS, ...persisted.settings } }),
       }),
     ),
   )

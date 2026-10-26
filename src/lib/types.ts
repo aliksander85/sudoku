@@ -64,6 +64,7 @@ export interface Settings {
   mistakeMode: MistakeMode                   // default 'check'
   showTimer: boolean                         // default true
   theme: 'system' | 'light' | 'dark'         // default 'system'
+  handDrawn: boolean                         // default true
 }
 
 export interface DifficultyStats {

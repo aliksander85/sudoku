@@ -4,8 +4,10 @@
   gap: 0;
 }
 
-/* No grid gap: buttons are 1/9 of the board (≥ 32px at 320px, §6.3); the bg-colored border is the visual gap */
+/* No grid gap: buttons are 1/9 of the board (≥ 32px at 320px, §6.3); the ::before inset is the visual gap */
 .button {
+  position: relative;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -14,12 +16,27 @@
   min-height: 52px;
   padding: 4px 0;
   color: var(--accent-contrast);
-  background: var(--accent);
-  background-clip: padding-box;
-  border: 2px solid var(--bg);
-  border-radius: 8px;
+  background: transparent;
+  border: 0;
   cursor: pointer;
   touch-action: manipulation;
+}
+
+/* Hand-drawn fill on ::before so the sketch filter doesn't blur the digit */
+.button::before {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  z-index: -1;
+  background: var(--accent);
+  border: 2px solid var(--accent);
+  border-radius: var(--sketch-radius);
+  filter: var(--sketch-filter);
+  pointer-events: none;
+}
+
+.button:nth-child(even)::before {
+  border-radius: var(--sketch-radius-alt);
 }
 
 .button:focus-visible {
@@ -33,15 +50,18 @@
 }
 
 .digit {
-  font-size: 1.25rem;
-  font-weight: 600;
+  font-size: calc(1.25rem * var(--font-scale));
+  font-weight: var(--digit-weight);
+  line-height: 1;
 }
 
 /* Notes mode: outlined digits */
 .pad[data-notes='true'] .button {
   color: var(--accent);
+}
+
+.pad[data-notes='true'] .button::before {
   background: var(--surface);
-  box-shadow: inset 0 0 0 2px var(--accent);
 }
 
 @media ((min-width: 900px) and (orientation: landscape)), ((orientation: landscape) and (max-height: 500px)) {

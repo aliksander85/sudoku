@@ -44,7 +44,9 @@ export function isSettings(v: unknown): v is { settings: Settings } {
   return (
     isOneOf(MISTAKE_MODES, s.mistakeMode) &&
     typeof s.showTimer === 'boolean' &&
-    isOneOf(['system', 'light', 'dark'] as const, s.theme)
+    isOneOf(['system', 'light', 'dark'] as const, s.theme) &&
+    // Added later; settings saved before it are still valid and get the default on restore
+    (s.handDrawn === undefined || typeof s.handDrawn === 'boolean')
   )
 }
 

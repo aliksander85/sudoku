@@ -168,6 +168,7 @@ export interface Settings {
   mistakeMode: MistakeMode                   // default 'check'
   showTimer: boolean                         // default true
   theme: 'system' | 'light' | 'dark'         // default 'system'
+  handDrawn: boolean                         // default true
 }
 
 export interface DifficultyStats {
@@ -288,7 +289,7 @@ Portrait (default)                  Landscape (≥ 900px wide and wider than tal
 - Number pad: each button shows the digit and remaining count (per the *Number pad availability* rule in §3.7); disabled at 0 remaining. In notes mode, the pad looks visibly different (outlined digits).
 - Toolbar: Undo, Redo, Erase, Notes (toggle, `aria-pressed`), Hint, Pause/Resume. Auto-candidates is in the settings dialog ("Fill candidates", counts as a hint).
 - Status line: difficulty, timer (hidden if `showTimer` is false), mistakes (`Mistakes 1/3` in limit mode, `Mistakes 1` in check mode, hidden in off mode).
-- Dialogs use native `<dialog>`: New game (4 difficulty buttons; shows a confirmation step if a game is in `playing`/`paused`), Won (time, mistakes, hints, best time, New game), Lost (Restart, New game), Settings (mistake mode, show timer, theme, fill candidates, reset stats, stats table).
+- Dialogs use native `<dialog>`: New game (4 difficulty buttons; shows a confirmation step if a game is in `playing`/`paused`), Won (time, mistakes, hints, best time, New game), Lost (Restart, New game), Settings (mistake mode, show timer, theme, hand-drawn style, fill candidates, reset stats, stats table).
 - While generating: the new game dialog shows a spinner; the current board remains visible.
 - Paused: digits hidden, overlay "Paused — Resume".
 

@@ -52,6 +52,12 @@ describe('SettingsDialog', () => {
     expect(settings.theme).toBe('dark')
   })
 
+  it('toggles the hand-drawn style', async () => {
+    render(<SettingsDialog open onClose={() => {}} />)
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Hand-drawn style', hidden: true }))
+    expect(useSettingsStore.getState().settings.handDrawn).toBe(false)
+  })
+
   it('Fill candidates adds notes, counts a hint and closes', async () => {
     let closed = false
     render(<SettingsDialog open onClose={() => (closed = true)} />)

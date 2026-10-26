@@ -4,4 +4,5 @@ export const DEFAULT_SETTINGS: Settings = {
   mistakeMode: 'check',
   showTimer: true,
   theme: 'system',
+  handDrawn: true,
 }

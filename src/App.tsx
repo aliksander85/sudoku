@@ -4,6 +4,7 @@ import ResultDialog from './components/dialogs/ResultDialog.tsx'
 import SettingsDialog from './components/dialogs/SettingsDialog.tsx'
 import ShortcutsDialog from './components/dialogs/ShortcutsDialog.tsx'
 import LiveRegion from './components/LiveRegion.tsx'
+import SketchFilter from './components/SketchFilter.tsx'
 import Board from './components/Board/Board.tsx'
 import NumberPad from './components/NumberPad/NumberPad.tsx'
 import StatusBar from './components/StatusBar/StatusBar.tsx'
@@ -27,6 +28,7 @@ function App() {
 
   return (
     <div className={styles.app}>
+      <SketchFilter />
       <main className={styles.main}>
         <header className={styles.header}>
           <h1>Sudoku</h1>

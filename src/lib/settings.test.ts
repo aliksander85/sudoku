@@ -3,6 +3,6 @@ import { DEFAULT_SETTINGS } from './settings.ts'
 
 describe('DEFAULT_SETTINGS', () => {
   it('matches the spec defaults', () => {
-    expect(DEFAULT_SETTINGS).toEqual({ mistakeMode: 'check', showTimer: true, theme: 'system' })
+    expect(DEFAULT_SETTINGS).toEqual({ mistakeMode: 'check', showTimer: true, theme: 'system', handDrawn: true })
   })
 })

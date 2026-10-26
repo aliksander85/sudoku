@@ -71,6 +71,10 @@ function SettingsDialog({ open, onClose }: Props) {
         value={settings.theme}
         onChange={(theme) => update({ theme })}
       />
+      <label className={styles.option}>
+        <input type="checkbox" checked={settings.handDrawn} onChange={(e) => update({ handDrawn: e.target.checked })} />
+        Hand-drawn style
+      </label>
       <button
         type="button"
         disabled={!canFill}
