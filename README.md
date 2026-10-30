@@ -2,6 +2,8 @@
 
 A fast, keyboard-friendly classic 9×9 Sudoku that runs entirely in the browser — no backend, no accounts, no ads. Puzzles are generated on the fly in a Web Worker, always have exactly one solution, and your game survives a page reload.
 
+**Play online: https://aliksander85.github.io/sudoku/**
+
 Built with React 19, TypeScript, Zustand and Vite.
 
 ## Features
